@@ -5,11 +5,12 @@ import (
 	"errors"
 	"github.com/astaxie/beego/logs"
 	"strconv"
+	"strings"
 	"time"
 )
 
 type SampReqBean struct {
-	PftestId int64             `json:"pftestId" valid:"Required"`
+	PftestId string            `json:"pftestId" valid:"Required"`
 	Sampling []ApiSamplingBean `json:"sampling"`
 }
 
@@ -39,14 +40,24 @@ func GetSampResultBean(s *[]SampReqBean) (*[]SampResult, error) {
 		if len(req.Sampling) <= 0 {
 			continue
 		}
+		//因为ngrinder生成的id格式为"test_140"
+		if len(req.PftestId) <= 0 || !strings.Contains(req.PftestId, "_") {
+			logs.Error("the sampling has no pftestId, {}", req)
+			continue
+		}
+
+		pftestId, err := strconv.ParseInt(strings.Split(req.PftestId, "_")[1], 10, 64)
+		if err!=nil{
+			logs.Error("the sampling get the pftestId error, {}", req)
+		}
 		for _, api := range req.Sampling {
 			str, _ := json.Marshal(api)
-			if req.PftestId <= 0 || api.ApiId <= 0 {
-				logs.Error("the sampling is not id error: {}", str)
+			if pftestId <= 0 || api.ApiId <= 0 {
+				logs.Error("the sampling is not id, error: {}", str)
 				continue
 			}
 			tmp := SampResult{}
-			tmp.PftestId = req.PftestId
+			tmp.PftestId = pftestId
 			tmp.ReqId = api.ApiId
 			tmp.Func = api.Func
 			tmp.Rt = api.Rt

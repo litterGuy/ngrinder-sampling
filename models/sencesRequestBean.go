@@ -37,7 +37,7 @@ type APIRequestParams struct {
 	ContentType   string            `json:"contentType,omitempty"`
 	Body          string            `json:"body,omitempty"`
 	ParamList     []NVPair          `json:"paramList,omitempty"`     //转化成string存库 params
-	OutParamList  []SencesOutParams `json:"outParamList,omitempty"`  //转化成string存库 outParams
+	OutParamsList  []SencesOutParams `json:"outParamsList,omitempty"`  //转化成string存库 outParams
 	AssertionList []SencesAssertion `json:"assertionList,omitempty"` //转化成string存库 assertion
 }
 
@@ -110,8 +110,8 @@ func GetRequestPmsBean(a SencesRequestBean) (*[]RequestPms, error) {
 			requestPms.Params = string(params)
 		}
 		//outParamList转化成outParams
-		if len(s.OutParamList) > 0 {
-			outParams, outPmsErr := json.Marshal(s.OutParamList)
+		if len(s.OutParamsList) > 0 {
+			outParams, outPmsErr := json.Marshal(s.OutParamsList)
 			if outPmsErr != nil {
 				return nil, outPmsErr
 			}
@@ -156,8 +156,8 @@ func ValidSencesParams(s *SencesRequestBean) error {
 
 	for _, requestPms := range s.RequestPmsList {
 		//outParamList
-		if len(requestPms.OutParamList) > 0 {
-			for _, outParam := range requestPms.OutParamList {
+		if len(requestPms.OutParamsList) > 0 {
+			for _, outParam := range requestPms.OutParamsList {
 				if len(outParam.Name) <= 0 {
 					return errors.New(requestPms.ApiName + ":outparam`s name can not be empty")
 				}
@@ -249,7 +249,7 @@ func BuildScenesBean(pms *TestPms, requestPmsList *[]RequestPms) (*SencesRequest
 			if err != nil {
 				return nil, err
 			}
-			apiRequestParams.OutParamList = outParamsList
+			apiRequestParams.OutParamsList = outParamsList
 		}
 		//assertion转化
 		if len(requestPms.Assertion) > 0 {

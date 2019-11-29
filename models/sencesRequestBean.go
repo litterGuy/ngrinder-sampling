@@ -27,9 +27,9 @@ type APIRequestParams struct {
 	Id            int64             `json:"id,omitempty"`
 	TestPmsId     int64             `json:"testPmsId,omitempty"`
 	ApiName       string            `json:"apiName,omitempty" valid:"Required;MaxSize(100)"`
-	Sort          int               `json:"sort,omitempty" valid:"Required;"`
+	Sort          int               `json:"sort" valid:"Required;"`
 	FunName       string            `json:"funName,omitempty"`
-	Type          int               `json:"type,omitempty" valid:"Required;"`
+	Type          int               `json:"type" valid:"Required;"`
 	Method        string            `json:"method,omitempty" valid:"Required"`
 	Timeout       int64             `json:"timeout,omitempty"`
 	Url           string            `json:"url,omitempty" valid:"Required"`
@@ -57,15 +57,15 @@ type NVPair struct {
 //出参设置
 type SencesOutParams struct {
 	Name           string `json:"name,omitempty"`
-	Source         int    `json:"source,omitempty"`
+	Source         int    `json:"source"`
 	ResolveExpress string `json:"resolveExpress,omitempty"`
-	Index          int    `json:"index,omitempty"`
+	Index          int    `json:"index"`
 }
 
 //检查点设置
 type SencesAssertion struct {
 	Name    string `json:"name,omitempty"`
-	Type    int    `json:"type,omitempty"`
+	Type    int    `json:"type"`
 	Factor  string `json:"factor,omitempty"`
 	Content string `json:"content,omitempty"`
 }

@@ -118,6 +118,7 @@ func (s *ScenesController) Create() {
 	}
 	o.Commit()
 
+	result["data"] = id
 	s.responseRst(result)
 }
 

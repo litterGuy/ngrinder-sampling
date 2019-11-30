@@ -18,7 +18,7 @@ type SencesRequestBean struct {
 	FileDataList            []SencesFileData   `json:"fileDataList,omitempty"` //转化成string存库 fileData
 	IgnoreSampleCount       int                `json:"ignoreSampleCount,omitempty"`
 	TargetHosts             string             `json:"targetHosts,omitempty"`
-	UseRampUp               string               `json:"useRampUp,omitempty" valid:"Required"`
+	UseRampUp               string             `json:"useRampUp,omitempty" valid:"Required"`
 	RampUpType              string             `json:"rampUpType,omitempty"`
 	Threshold               string             `json:"threshold,omitempty" valid:"Required"`
 	Duration                int64              `json:"duration,omitempty"`

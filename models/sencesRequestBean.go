@@ -13,14 +13,29 @@ import (
 不与数据库对应
 */
 type SencesRequestBean struct {
-	Id             int64              `json:"id,omitempty"`
-	Name           string             `json:"name,omitempty" valid:"Required;MaxSize(200)"`
-	FileDataList   []SencesFileData   `json:"fileDataList,omitempty"` //转化成string存库 fileData
-	ScriptPath     string             `json:"scriptPath,omitempty"`
-	PftestId       int64              `json:"pftestId,omitempty"`
-	CreateTime     time.Time          `json:"createTime,omitempty"`
-	UpdateTime     time.Time          `json:"updateTime,omitempty"`
-	RequestPmsList []APIRequestParams `json:"requestPmsList,omitempty" valid:"Required"`
+	Id                      int64              `json:"id,omitempty"`
+	Name                    string             `json:"name,omitempty" valid:"Required;MaxSize(200)"`
+	FileDataList            []SencesFileData   `json:"fileDataList,omitempty"` //转化成string存库 fileData
+	IgnoreSampleCount       int                `json:"ignoreSampleCount,omitempty"`
+	TargetHosts             string             `json:"targetHosts,omitempty"`
+	UseRampUp               string               `json:"useRampUp,omitempty" valid:"Required"`
+	RampUpType              string             `json:"rampUpType,omitempty"`
+	Threshold               string             `json:"threshold,omitempty" valid:"Required"`
+	Duration                int64              `json:"duration,omitempty"`
+	RunCount                int                `json:"runCount,omitempty"`
+	AgentCount              int                `json:"agentCount,omitempty" valid:"Required"`
+	VuserPerAgent           int                `json:"vuserPerAgent,omitempty" valid:"Required"`
+	Processes               int                `json:"processes,omitempty" valid:"Required"`
+	RampUpInitCount         int                `json:"rampUpInitCount,omitempty"`
+	RampUpInitSleepTime     int                `json:"rampUpInitSleepTime,omitempty"`
+	RampUpStep              int                `json:"rampUpStep,omitempty"`
+	RampUpIncrementInterval int                `json:"rampUpIncrementInterval,omitempty"`
+	Threads                 int                `json:"threads,omitempty" valid:"Required"`
+	SamplingInterval        int                `json:"samplingInterval,omitempty" valid:"Required"`
+	Param                   string             `json:"param,omitempty"`
+	CreateTime              time.Time          `json:"createTime,omitempty"`
+	UpdateTime              time.Time          `json:"updateTime,omitempty"`
+	RequestPmsList          []APIRequestParams `json:"requestPmsList,omitempty" valid:"Required"`
 }
 
 type APIRequestParams struct {
@@ -37,7 +52,7 @@ type APIRequestParams struct {
 	ContentType   string            `json:"contentType,omitempty"`
 	Body          string            `json:"body,omitempty"`
 	ParamList     []NVPair          `json:"paramList,omitempty"`     //转化成string存库 params
-	OutParamsList  []SencesOutParams `json:"outParamsList,omitempty"`  //转化成string存库 outParams
+	OutParamsList []SencesOutParams `json:"outParamsList,omitempty"` //转化成string存库 outParams
 	AssertionList []SencesAssertion `json:"assertionList,omitempty"` //转化成string存库 assertion
 }
 

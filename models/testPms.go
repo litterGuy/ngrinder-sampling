@@ -7,13 +7,28 @@ import (
 
 //场景测试
 type TestPms struct {
-	Id         int64
-	Name       string
-	FileData   string
-	ScriptPath string
-	PftestId   int64
-	CreateTime time.Time
-	UpdateTime time.Time
+	Id                      int64
+	Name                    string
+	FileData                string
+	IgnoreSampleCount       int
+	TargetHosts             string
+	UseRampUp               string
+	RampUpType              string
+	Threshold               string
+	Duration                int64
+	RunCount                int
+	AgentCount              int
+	VuserPerAgent           int
+	Processes               int
+	RampUpInitCount         int
+	RampUpInitSleepTime     int
+	RampUpStep              int
+	RampUpIncrementInterval int
+	Threads                 int
+	SamplingInterval        int
+	Param                   string
+	CreateTime              time.Time
+	UpdateTime              time.Time
 }
 
 func init() {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/astaxie/beego/validation"
 	"github.com/gogf/gf/util/gconv"
+	"reflect"
 	"time"
 )
 
@@ -36,7 +37,7 @@ type SencesRequestBean struct {
 	CreateTime              time.Time          `json:"createTime,omitempty"`
 	UpdateTime              time.Time          `json:"updateTime,omitempty"`
 	RequestPmsList          []APIRequestParams `json:"requestPmsList,omitempty" valid:"Required"`
-	ScheduledTime           string          `json:"scheduledTime"`
+	ScheduledTime           string             `json:"scheduledTime"`
 }
 
 type APIRequestParams struct {
@@ -233,6 +234,9 @@ func BuildScenesBean(pms *TestPms, requestPmsList *[]RequestPms) (*SencesRequest
 	}
 	sencesRequestBean.FileDataList = fileDataList
 
+	if IsNil(requestPmsList) || len(*requestPmsList) <= 0 {
+		return &sencesRequestBean, nil
+	}
 	//转化requestPmsList
 	apiRequestParamsList := make([]APIRequestParams, len(*requestPmsList))
 	for i, requestPms := range *requestPmsList {
@@ -281,4 +285,12 @@ func BuildScenesBean(pms *TestPms, requestPmsList *[]RequestPms) (*SencesRequest
 
 	sencesRequestBean.RequestPmsList = apiRequestParamsList
 	return &sencesRequestBean, nil
+}
+
+func IsNil(i interface{}) bool {
+	defer func() {
+		recover()
+	}()
+	vi := reflect.ValueOf(i)
+	return vi.IsNil()
 }

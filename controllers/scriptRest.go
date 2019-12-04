@@ -62,7 +62,8 @@ func (s *ScriptController) Create() {
 	}
 	//请求ngrinder，生成压测脚本和测试数据
 	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
-	req := httplib.Post(ngrinderUrl)
+	apiUrl := beego.AppConfig.String("ngrinder.api.create")
+	req := httplib.Post(ngrinderUrl + apiUrl)
 	req.Header("Content-Type", "application/json")
 	req.JSONBody(sencesRequestBean)
 	var js struct{ Code int }

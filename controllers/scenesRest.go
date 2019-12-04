@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"
 	"ngrinder-sampling/models"
 	"strconv"
@@ -13,9 +14,6 @@ type ScenesController struct {
 	beego.Controller
 }
 
-/*
-TODO 获取ngrinder其余数据，压测设置
-*/
 // @router	/getScenesById	[get]
 func (s *ScenesController) GetScenesById() {
 	result := make(map[string]interface{})
@@ -52,9 +50,6 @@ func (s *ScenesController) GetScenesById() {
 	s.responseRst(result)
 }
 
-/*
-TODO 加入发送ngrinder测试的参数和发送请求
-*/
 // @router /create	[post]
 func (s *ScenesController) Create() {
 	result := make(map[string]interface{})
@@ -219,6 +214,48 @@ func (s *ScenesController) Delete() {
 		s.responseRst(result)
 	}
 	o.Commit()
+
+	//增加请求，删除svn上的脚本和压测数据源文件
+	requestBean, err := models.BuildScenesBean(testPms, nil)
+	if err != nil {
+		result["errMsg"] = err
+		result["code"] = 1
+		s.responseRst(result)
+	}
+	var path string
+	if len(requestBean.FileDataList) > 0 {
+		for index, fileData := range requestBean.FileDataList {
+			if index != 0 {
+				path += ","
+			}
+			path += fileData.Path
+		}
+	}
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.create")
+	ngrinderUrl += apiUrl + "?id=" + strconv.FormatInt(id, 10)
+	if len(path) > 0 {
+		ngrinderUrl += "&path=" + path
+	}
+	req := httplib.Get(ngrinderUrl)
+	var js struct {
+		Code   int
+		ErrMsg string
+	}
+	rst, err := req.String()
+	if err != nil {
+		result["code"] = 1
+		result["errMsg"] = err
+	} else {
+		err = json.Unmarshal([]byte(rst), &js)
+		if err != nil {
+			result["code"] = 1
+			result["errMsg"] = rst
+		} else {
+			result["code"] = js.Code
+			result["errMsg"] = js.ErrMsg
+		}
+	}
 
 	s.responseRst(result)
 }

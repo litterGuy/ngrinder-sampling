@@ -56,6 +56,8 @@ type APIRequestParams struct {
 	ParamList     []NVPair          `json:"paramList,omitempty"`     //转化成string存库 params
 	OutParamsList []SencesOutParams `json:"outParamsList,omitempty"` //转化成string存库 outParams
 	AssertionList []SencesAssertion `json:"assertionList,omitempty"` //转化成string存库 assertion
+	WaitTime      int               `json:"waitTime"`
+	WaitVuserNum  int               `json:"waitVuserNum"`
 }
 
 //数据文件结构体
@@ -162,6 +164,7 @@ func ValidSencesParams(s *SencesRequestBean) error {
 		return errors.New(valid.Errors[0].Field + " " + valid.Errors[0].Error())
 	}
 	//检验嵌套结构体中的参数
+
 	//fileDataList
 	if len(s.FileDataList) > 0 {
 		for _, fileData := range s.FileDataList {
@@ -171,7 +174,29 @@ func ValidSencesParams(s *SencesRequestBean) error {
 		}
 	}
 
-	for _, requestPms := range s.RequestPmsList {
+	for i, requestPms := range s.RequestPmsList {
+		if requestPms.Type == 2 {
+			requestPms.ApiName = "集合点"
+			requestPms.Method = "none"
+			requestPms.Url = "none"
+			if requestPms.WaitTime <= 0 && requestPms.WaitVuserNum <= 0 {
+				return errors.New(requestPms.ApiName + ":wait params can not be empty")
+			}
+			s.RequestPmsList[i] = requestPms
+		} else {
+			if len(requestPms.ApiName) <= 0 {
+				return errors.New("request api name can not be empty")
+			}
+			if requestPms.Sort != i {
+				return errors.New(requestPms.ApiName + ":sort value error")
+			}
+			if len(requestPms.Method) <= 0 {
+				return errors.New(requestPms.ApiName + ":method can not be empty")
+			}
+			if len(requestPms.Url) <= 0 {
+				return errors.New(requestPms.ApiName + ":url can not be empty")
+			}
+		}
 		//outParamList
 		if len(requestPms.OutParamsList) > 0 {
 			for _, outParam := range requestPms.OutParamsList {
@@ -208,14 +233,6 @@ func ValidUpdateSencesParams(s *SencesRequestBean) error {
 	}
 	if s.Id <= 0 {
 		return errors.New("testPms`s id can not be empty")
-	}
-	for _, requestPms := range s.RequestPmsList {
-		if requestPms.Id <= 0 {
-			return errors.New("requestPms`s id can not be empty")
-		}
-		if requestPms.TestPmsId <= 0 {
-			return errors.New("requestPms`s testPmsId can not be empty")
-		}
 	}
 	return nil
 }

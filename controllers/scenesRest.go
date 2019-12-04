@@ -99,8 +99,10 @@ func (s *ScenesController) Create() {
 		result["errMsg"] = dbErr.Error()
 		s.responseRst(result)
 	}
-	for _, requestPms := range *requestPmsArray {
+	for i, requestPms := range *requestPmsArray {
 		requestPms.TestPmsId = id
+		//设置生成脚本时的函数名
+		requestPms.FunName = "test" + strconv.Itoa(i);
 		pid, dbError := models.RequestPmsSave(&requestPms, o)
 		if dbError != nil {
 			//事务回滚

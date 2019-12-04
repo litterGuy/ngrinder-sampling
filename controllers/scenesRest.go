@@ -166,8 +166,20 @@ func (s *ScenesController) Update() {
 		result["errMsg"] = dbErr.Error()
 		s.responseRst(result)
 	}
-	for _, requestPms := range *requestPmsArray {
-		dbError := models.RequestPmsUpdate(&requestPms, o)
+	//删除requestPms，重新添加
+	_, err = models.RequestPmsDeleteByTestPmsId(testPms.Id, o)
+	if err != nil {
+		o.Rollback()
+		result["code"] = 1
+		result["errMsg"] = err.Error()
+		s.responseRst(result)
+	}
+	for i, requestPms := range *requestPmsArray {
+		//设置生成脚本时的函数名
+		requestPms.FunName = "test" + strconv.Itoa(i);
+		requestPms.Id = 0
+		requestPms.TestPmsId = testPms.Id
+		_, dbError := models.RequestPmsSave(&requestPms, o)
 		if dbError != nil {
 			//事务回滚
 			o.Rollback()

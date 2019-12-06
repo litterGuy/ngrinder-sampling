@@ -182,6 +182,10 @@ func ValidSencesParams(s *SencesRequestBean) error {
 			if requestPms.WaitTime <= 0 && requestPms.WaitVuserNum <= 0 {
 				return errors.New(requestPms.ApiName + ":wait params can not be empty")
 			}
+			//检验用户量如果大于虚拟用户数则没有意义
+			if requestPms.WaitVuserNum > 0 && requestPms.WaitVuserNum > s.VuserPerAgent {
+				return errors.New("the consolidation point vuser number can not gt vuserPerAgent")
+			}
 			s.RequestPmsList[i] = requestPms
 		} else {
 			if len(requestPms.ApiName) <= 0 {

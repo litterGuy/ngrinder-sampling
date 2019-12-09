@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>测试云平台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/static/img/favicon.ico">
+    <link rel="stylesheet" href="/static/lib/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/layuimini.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/lib/font-awesome/css/font-awesome.min.css" media="all">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style id="layuimini-bg-color">
+    </style>
+</head>
+<body class="layui-layout-body layuimini-all">
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header header">
+        <div class="layui-logo">
+            <h1>测试云平台</h1>
+        </div>
+        <a>
+            <div class="layuimini-tool"><i title="展开" class="fa fa-outdent" data-side-fold="1"></i></div>
+        </a>
+
+        <ul class="layui-nav layui-layout-left layui-header-menu layui-header-pc-menu mobile layui-hide-xs">
+
+        </ul>
+        <ul class="layui-nav layui-layout-left layui-header-menu mobile layui-hide-sm">
+            <li class="layui-nav-item">
+                <a href="javascript:;"><i class="fa fa-list-ul"></i> 选择模块</a>
+                <dl class="layui-nav-child layui-header-mini-menu">
+                </dl>
+            </li>
+        </ul>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;" data-refresh="刷新"><i class="fa fa-refresh"></i></a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;" data-clear="清理" class="layuimini-clear"><i class="fa fa-trash-o"></i></a>
+            </li>
+            <li class="layui-nav-item layuimini-setting">
+                <a href="javascript:;">{{.userId}}</a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a href="javascript:;" class="login-out">退出登录</a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layuimini-select-bgcolor mobile layui-hide-xs">
+                <a href="javascript:;" data-bgcolor="配色方案"><i class="fa fa-ellipsis-v"></i></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll layui-left-menu">
+            <ul class="layui-nav layui-nav-tree layui-this">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-menu-tips">
+                        <i class="fa fa-home"></i>
+                        <span class="layui-left-nav">概览</span> <span class="layui-nav-more"></span>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd class="layui-this">
+                            <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd"
+                               data-one-page-mpi="m-p-i-1" data-one-page="#" target="_self">
+                                <i class="fa fa-tachometer"></i>
+                                <span class="layui-left-nav">todo</span>
+                            </a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd" data-one-page-mpi="m-p-i-2"
+                       data-one-page="page/menu.html" target="_self">
+                        <i class="fa fa-cloud"></i>
+                        <span class="layui-left-nav">创建压测</span>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd" data-one-page-mpi="m-p-i-3"
+                       data-one-page="/v1/home/scenesList" target="_self">
+                        <i class="fa fa-tasks"></i>
+                        <span class="layui-left-nav">压测场景</span>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd" data-one-page-mpi="m-p-i-4"
+                       data-one-page="page/menu.html" target="_self">
+                        <i class="fa fa-desktop"></i>
+                        <span class="layui-left-nav">压测报告</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div class="layui-card layuimini-page-header layui-hide-xs layui-hide">
+            <div class="layui-breadcrumb" id="layuimini-page-header">
+                <a><cite>菜单管理</cite></a>
+            </div>
+        </div>
+        <div class="layuimini-content-page">
+        </div>
+    </div>
+
+</div>
+<script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+<script src="/static/lib/lay-config.js" charset="utf-8"></script>
+<script>
+    layui.use(['element', 'layer', 'layuimini'], function () {
+        var $ = layui.jquery,
+            element = layui.element,
+            layer = layui.layer;
+        layuimini.initPage();
+        $('.login-out').on("click", function () {
+            layer.msg('退出登录成功', function () {
+                window.location = '/v1/user/logout';
+            });
+        });
+    });
+</script>
+</body>
+</html>

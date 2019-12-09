@@ -27,6 +27,7 @@ type TestPms struct {
 	Threads                 int
 	SamplingInterval        int
 	Param                   string
+	UserId                  string
 	CreateTime              time.Time
 	UpdateTime              time.Time
 }
@@ -57,4 +58,21 @@ func TestPmsGetById(id int64) (*TestPms, error) {
 		return nil, err
 	}
 	return &testPms, nil
+}
+
+func TestPmsGetPageByUserId(userId string, name string, page int, pageSize int) (*[]TestPms, int64) {
+	o := orm.NewOrm()
+	var testPmsList []TestPms
+	qs := o.QueryTable(testPmsTableName())
+	qs = qs.Filter("user_id", userId)
+	if len(name) > 0 {
+		qs = qs.Filter("name__contains", name)
+	}
+	total, _ := qs.Count()
+	qs.OrderBy("-id").Limit(pageSize).Offset((page - 1) * pageSize).All(&testPmsList)
+	return &testPmsList, total
+}
+
+func testPmsTableName() string {
+	return "test_pms"
 }

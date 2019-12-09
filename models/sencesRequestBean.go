@@ -38,6 +38,7 @@ type SencesRequestBean struct {
 	UpdateTime              time.Time          `json:"updateTime,omitempty"`
 	RequestPmsList          []APIRequestParams `json:"requestPmsList,omitempty" valid:"Required"`
 	ScheduledTime           string             `json:"scheduledTime"`
+	UserId                  string             `json:"userId"`
 }
 
 type APIRequestParams struct {

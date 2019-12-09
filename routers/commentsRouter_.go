@@ -7,6 +7,24 @@ import (
 
 func init() {
 
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
+            Method: "Index",
+            Router: `/index`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
+            Method: "ScenesList",
+            Router: `/scenesList`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:SamplingController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:SamplingController"],
         beego.ControllerComments{
             Method: "Delete",
@@ -63,6 +81,15 @@ func init() {
 
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"],
         beego.ControllerComments{
+            Method: "List",
+            Router: `/list`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"],
+        beego.ControllerComments{
             Method: "Update",
             Router: `/update`,
             AllowHTTPMethods: []string{"post"},
@@ -75,6 +102,24 @@ func init() {
             Method: "Create",
             Router: `/create`,
             AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:UserController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:UserController"],
+        beego.ControllerComments{
+            Method: "Login",
+            Router: `/login`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:UserController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:UserController"],
+        beego.ControllerComments{
+            Method: "Logout",
+            Router: `/logout`,
+            AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
             Params: nil})

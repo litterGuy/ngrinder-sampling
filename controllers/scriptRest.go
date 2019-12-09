@@ -11,7 +11,7 @@ import (
 )
 
 type ScriptController struct {
-	beego.Controller
+	BaseController
 }
 
 /**
@@ -19,35 +19,33 @@ type ScriptController struct {
 */
 // @router	/create	[post]
 func (s *ScriptController) Create() {
-	result := make(map[string]interface{})
-	result["code"] = 0
 	id, err := s.GetInt64("id")
 	if err != nil {
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 
 	//获取testPms
 	testPms, err := models.TestPmsGetById(id)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
+		s.responseAjax()
 	}
 	//获取requestPms
 	requestPmsList, err := models.RequestPmsGetByTestPmsId(id)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	//组装数据
 	sencesRequestBean, err := models.BuildScenesBean(testPms, &requestPmsList)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	scheduledTimeStr := s.GetString("scheduledTime")
 	if len(scheduledTimeStr) > 0 {
@@ -66,27 +64,20 @@ func (s *ScriptController) Create() {
 	req := httplib.Post(ngrinderUrl + apiUrl)
 	req.Header("Content-Type", "application/json")
 	req.JSONBody(sencesRequestBean)
-	var js struct{ Code int }
+	var js NsResponseBean
 	rst, err := req.String()
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
 	} else {
 		err = json.Unmarshal([]byte(rst), &js)
 		if err != nil {
-			result["code"] = 1
-			result["errMsg"] = rst
+			s.result.Code = 1
+			s.result.ErrMsg = rst
 		} else {
-			result["code"] = js.Code
+			s.result.Code = js.Code
 		}
 	}
 
-	s.responseRst(result)
-}
-
-//handle the result
-func (s *ScriptController) responseRst(result map[string]interface{}) {
-	s.Data["json"] = result
-	s.ServeJSON()
-	s.StopRun()
+	s.responseAjax()
 }

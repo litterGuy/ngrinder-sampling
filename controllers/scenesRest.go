@@ -4,81 +4,97 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"ngrinder-sampling/models"
+	"ngrinder-sampling/utils"
 	"strconv"
 	"time"
 )
 
 type ScenesController struct {
-	beego.Controller
+	BaseController
+}
+
+// @router	/list	[get]
+func (s *ScenesController) List() {
+	page, _ := s.GetInt("page", 1)
+	pageSize, _ := s.GetInt("limit", PAGESIZE)
+	scenesName := s.GetString("scenesName")
+
+	list, total := models.TestPmsGetPageByUserId(s.userId, scenesName, page, pageSize)
+	_ = utils.NewPaginator(s.Ctx.Request, pageSize, total)
+
+	s.result.Data = list
+	s.result.Code = 0
+	s.result.Count = int(total)
+	s.responseAjax()
 }
 
 // @router	/getScenesById	[get]
 func (s *ScenesController) GetScenesById() {
-	result := make(map[string]interface{})
-	result["code"] = 0
 	id, err := s.GetInt64("id")
 	if err != nil {
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 	//获取testPms
 	testPms, err := models.TestPmsGetById(id)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
+		s.responseAjax()
 	}
 	//获取requestPms
 	requestPmsList, err := models.RequestPmsGetByTestPmsId(id)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	//组装数据
 	sencesRequestBean, err := models.BuildScenesBean(testPms, &requestPmsList)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 
-	result["data"] = sencesRequestBean
-	s.responseRst(result)
+	s.result.Data = sencesRequestBean
+	s.responseAjax()
 }
 
 // @router /create	[post]
 func (s *ScenesController) Create() {
-	result := make(map[string]interface{})
-	result["code"] = 0
-
 	var sencesRequestBean models.SencesRequestBean
 	data := s.Ctx.Input.RequestBody
 	//json数据封装到user对象中
 	err := json.Unmarshal(data, &sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 
 	//对参数完整性进行校验
 	if err := models.ValidSencesParams(&sencesRequestBean); err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
+	if len(sencesRequestBean.UserId) <= 0 {
+		sencesRequestBean.UserId = s.userId
+	}
+
 	//开启事务
 	o := orm.NewOrm()
 	//获取testPms
 	testPms, err := models.GetTestPmsBean(sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	testPms.CreateTime = time.Now()
 	testPms.UpdateTime = testPms.CreateTime
@@ -86,18 +102,18 @@ func (s *ScenesController) Create() {
 	o.Begin()
 	id, dbErr := models.TestPmsSave(testPms, o)
 	if dbErr != nil {
-		result["code"] = 1
-		result["errMsg"] = dbErr.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = dbErr.Error()
+		s.responseAjax()
 	}
 	testPms.Id = id
 
 	//获取requestPms
 	requestPmsArray, err := models.GetRequestPmsBean(sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = dbErr.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = dbErr.Error()
+		s.responseAjax()
 	}
 	for i, requestPms := range *requestPmsArray {
 		requestPms.TestPmsId = id
@@ -107,72 +123,72 @@ func (s *ScenesController) Create() {
 		if dbError != nil {
 			//事务回滚
 			o.Rollback()
-			result["code"] = 1
-			result["errMsg"] = dbError.Error()
-			s.responseRst(result)
+			s.result.Code = 1
+			s.result.ErrMsg = dbError.Error()
+			s.responseAjax()
 		}
 		requestPms.Id = pid
 	}
 	o.Commit()
 
-	result["data"] = id
-	s.responseRst(result)
+	s.result.Data = id
+	s.responseAjax()
 }
 
 // @router	/update	[post]
 func (s *ScenesController) Update() {
-	result := make(map[string]interface{})
-	result["code"] = 0
-
 	var sencesRequestBean models.SencesRequestBean
 	data := s.Ctx.Input.RequestBody
 	//json数据封装到user对象中
 	err := json.Unmarshal(data, &sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 
 	//对参数完整性进行校验
 	if err := models.ValidUpdateSencesParams(&sencesRequestBean); err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
+	}
+	if len(sencesRequestBean.UserId) <= 0 {
+		sencesRequestBean.UserId = s.userId
 	}
 	//开启事务
 	o := orm.NewOrm()
 	//获取testPms
 	testPms, err := models.GetTestPmsBean(sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	testPms.UpdateTime = time.Now()
 
 	o.Begin()
 	dbErr := models.TestPmsUpdate(testPms, o)
 	if dbErr != nil {
-		result["code"] = 1
-		result["errMsg"] = dbErr.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = dbErr.Error()
+		s.responseAjax()
 	}
 
 	//获取requestPms
 	requestPmsArray, err := models.GetRequestPmsBean(sencesRequestBean)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = dbErr.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = dbErr.Error()
+		s.responseAjax()
 	}
 	//删除requestPms，重新添加
 	_, err = models.RequestPmsDeleteByTestPmsId(testPms.Id, o)
 	if err != nil {
 		o.Rollback()
-		result["code"] = 1
-		result["errMsg"] = err.Error()
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
 	}
 	for i, requestPms := range *requestPmsArray {
 		//设置生成脚本时的函数名
@@ -183,32 +199,30 @@ func (s *ScenesController) Update() {
 		if dbError != nil {
 			//事务回滚
 			o.Rollback()
-			result["code"] = 1
-			result["errMsg"] = dbError.Error()
-			s.responseRst(result)
+			s.result.Code = 1
+			s.result.ErrMsg = dbError.Error()
+			s.responseAjax()
 		}
 	}
 	o.Commit()
 
-	s.responseRst(result)
+	s.responseAjax()
 }
 
 // @router	/delete	[get]
 func (s *ScenesController) Delete() {
-	result := make(map[string]interface{})
-	result["code"] = 0
 	id, err := s.GetInt64("id")
 	if err != nil {
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 	//获取testPms
 	testPms, err := models.TestPmsGetById(id)
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
-		s.responseRst(result)
+		s.result.Code = 1
+		s.result.ErrMsg = "the scenes of id " + strconv.FormatInt(id, 10) + " not exist"
+		s.responseAjax()
 	}
 	//开启事务，删除requestPms、testPms
 	o := orm.NewOrm()
@@ -216,25 +230,25 @@ func (s *ScenesController) Delete() {
 	_, err = models.RequestPmsDeleteByTestPmsId(id, o)
 	if err != nil {
 		o.Rollback()
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 	_, err = models.TestPmsDelete(testPms, o)
 	if err != nil {
 		o.Rollback()
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 	o.Commit()
 
 	//增加请求，删除svn上的脚本和压测数据源文件
 	requestBean, err := models.BuildScenesBean(testPms, nil)
 	if err != nil {
-		result["errMsg"] = err
-		result["code"] = 1
-		s.responseRst(result)
+		s.result.ErrMsg = err.Error()
+		s.result.Code = 1
+		s.responseAjax()
 	}
 	var path string
 	if len(requestBean.FileDataList) > 0 {
@@ -246,37 +260,33 @@ func (s *ScenesController) Delete() {
 		}
 	}
 	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
-	apiUrl := beego.AppConfig.String("ngrinder.api.create")
+	apiUrl := beego.AppConfig.String("ngrinder.api.delete")
 	ngrinderUrl += apiUrl + "?id=" + strconv.FormatInt(id, 10)
 	if len(path) > 0 {
 		ngrinderUrl += "&path=" + path
 	}
+	ngrinderUrl += "&userId=" + s.userId
 	req := httplib.Get(ngrinderUrl)
-	var js struct {
-		Code   int
-		ErrMsg string
-	}
+	var js NsResponseBean
 	rst, err := req.String()
 	if err != nil {
-		result["code"] = 1
-		result["errMsg"] = err
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
 	} else {
 		err = json.Unmarshal([]byte(rst), &js)
 		if err != nil {
-			result["code"] = 1
-			result["errMsg"] = rst
+			s.result.Code = 1
+			s.result.ErrMsg = rst
 		} else {
-			result["code"] = js.Code
-			result["errMsg"] = js.ErrMsg
+			s.result.Code = js.Code
+			s.result.ErrMsg = js.ErrMsg
 		}
 	}
+	if s.result.Code == 1 {
+		logs.Error("delete script error:{}, ", s.result.ErrMsg)
+		//脚本删除失败，不影响场景数据的删除
+		s.result.Code = 0
+	}
 
-	s.responseRst(result)
-}
-
-//handle the result
-func (s *ScenesController) responseRst(result map[string]interface{}) {
-	s.Data["json"] = result
-	s.ServeJSON()
-	s.StopRun()
+	s.responseAjax()
 }

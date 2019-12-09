@@ -15,6 +15,10 @@ func init() {
 			beego.NSInclude(&controllers.ScenesController{})),
 		beego.NSNamespace("/script",
 			beego.NSInclude(&controllers.ScriptController{})),
+		beego.NSNamespace("/user",
+			beego.NSInclude(&controllers.UserController{})),
+		beego.NSNamespace("/home",
+			beego.NSInclude(&controllers.HomeController{})),
 	)
 
 	beego.AddNamespace(ns)

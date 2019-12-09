@@ -1,0 +1,131 @@
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="layui-elem-field layuimini-search">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">测试名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="queryFilter">
+                                    <option value=""></option>
+                                    <option value="R">正在运行</option>
+                                    <option value="S">已预约</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <a class="layui-btn" lay-submit="" lay-filter="data-search-btn">搜索</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <div class="layui-btn-group">
+            <button class="layui-btn data-add-btn">添加</button>
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'layuimini'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/v1/home/reportAjax',
+            cols: [[
+                {type: "checkbox", width: 50, fixed: "left"},
+                {field: 'id', width: 60, title: '测试Id'},
+                {field: 'status', width: 120, title: '状态'},
+                {field: 'testName', width: 220, title: '测试名称'},
+                {field: 'scriptName', width: 200, title: '脚本文件名'},
+                {field: 'startTime', width: 185, title: '开始时间'},
+                {field: 'runCount', width: 120, title: '持续阈值-次数'},
+                {field: 'duration', width: 120, title: '持续阈值-时间'},
+                {field: 'tps', width: 80, title: 'TPS'},
+                {field: 'meanTestTime', width: 100, title: 'MTT'},
+                {field: 'errors', width: 70, title: '出错率'},
+                {field: 'vuserPerAgent', width: 80, title: 'Vusers'},
+                {title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    name: data.field.name,
+                    queryFilter: data.field.queryFilter
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        // 监听添加操作
+        $(".data-add-btn").on("click", function () {
+            var loading = layer.load(0, {shade: false, time: 2 * 1000});
+            $('.layui-this').removeClass("layui-this");
+            layuimini.initPageTitle("/v1/home/scenesList", "压测场景");
+            layuimini.initConten("/v1/home/scenesList");
+            layuimini.initDevice();
+            layer.close(loading);
+        });
+
+        // 监听删除操作
+        $(".data-delete-btn").on("click", function () {
+            var checkStatus = table.checkStatus('currentTableId')
+                , data = checkStatus.data;
+            layer.alert(JSON.stringify(data));
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'detail') {
+                window.open("{{.ngrinder_host}}/perftest/" + data.id + "/detail_report");
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.get("/v1/home/reportDelete?ids=" + data.id, function (result) {
+                        if (result.code != 0) {
+                            layer.close(index);
+                            layer.alert(result.errMsg);
+                        } else {
+                            obj.del();
+                            layer.close(index);
+                        }
+                    });
+                });
+            }
+        });
+
+    });
+</script>

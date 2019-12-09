@@ -40,4 +40,5 @@ type NsResponseBean struct {
 	ErrMsg string      `json:"errMsg"`
 	Data   interface{} `json:"data"`
 	Count  int         `json:"count"`
+	Msg    string      `json:"msg,omitempty"`
 }

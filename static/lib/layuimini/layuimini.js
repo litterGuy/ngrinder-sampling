@@ -104,19 +104,22 @@ layui.define(["element", "jquery", "layer"], function (exports) {
                                 if (title == undefined || title == '' || title == null) {
                                     var thisPageTitle = $element.text();
                                     thisPageTitle = thisPageTitle.replace(/\s+/g, "");
+                                    console.log(parentTitle);
                                     pageHeader.push(thisPageTitle);
                                 }
                                 if ($element.attr('class') != 'layui-nav-item layui-this') {
                                     addMenuClass($element.parent().parent(), 2);
                                 } else {
                                     var moduleId = $element.parent().attr('id');
-                                    var moduleTile = $("#" + moduleId + "HeaderId").text();
-                                    moduleTile = moduleTile.replace(/\s+/g, "");
-                                    pageHeader.push(moduleTile);
-                                    $(".layui-header-menu li").attr('class', 'layui-nav-item');
-                                    $("#" + moduleId + "HeaderId").addClass("layui-this");
-                                    $(".layui-left-nav-tree").attr('class', 'layui-nav layui-nav-tree layui-hide');
-                                    $("#" + moduleId).attr('class', 'layui-nav layui-nav-tree layui-this');
+                                    if (typeof moduleId != "undefined") {
+                                        var moduleTile = $("#" + moduleId + "HeaderId").text();
+                                        moduleTile = moduleTile.replace(/\s+/g, "");
+                                        pageHeader.push(moduleTile);
+                                        $(".layui-header-menu li").attr('class', 'layui-nav-item');
+                                        $("#" + moduleId + "HeaderId").addClass("layui-this");
+                                        $(".layui-left-nav-tree").attr('class', 'layui-nav layui-nav-tree layui-hide');
+                                        $("#" + moduleId).attr('class', 'layui-nav layui-nav-tree layui-this');
+                                    }
                                 }
                             } else {
                                 $element.addClass('layui-nav-itemed');
@@ -127,13 +130,15 @@ layui.define(["element", "jquery", "layer"], function (exports) {
                                     addMenuClass($element.parent().parent(), 2);
                                 } else {
                                     var moduleId = $element.parent().attr('id');
-                                    var moduleTile = $("#" + moduleId + "HeaderId").text();
-                                    moduleTile = moduleTile.replace(/\s+/g, "");
-                                    pageHeader.push(moduleTile);
-                                    $(".layui-header-menu li").attr('class', 'layui-nav-item');
-                                    $("#" + moduleId + "HeaderId").addClass("layui-this");
-                                    $(".layui-left-nav-tree").attr('class', 'layui-nav layui-nav-tree layui-hide');
-                                    $("#" + moduleId).attr('class', 'layui-nav layui-nav-tree layui-this');
+                                    if (typeof moduleId != "undefined") {
+                                        var moduleTile = $("#" + moduleId + "HeaderId").text();
+                                        moduleTile = moduleTile.replace(/\s+/g, "");
+                                        pageHeader.push(moduleTile);
+                                        $(".layui-header-menu li").attr('class', 'layui-nav-item');
+                                        $("#" + moduleId + "HeaderId").addClass("layui-this");
+                                        $(".layui-left-nav-tree").attr('class', 'layui-nav layui-nav-tree layui-hide');
+                                        $("#" + moduleId).attr('class', 'layui-nav layui-nav-tree layui-this');
+                                    }
                                 }
                             }
                         };
@@ -629,7 +634,7 @@ layui.define(["element", "jquery", "layer"], function (exports) {
                 area: ['340px', clientHeight + 'px'],
                 offset: 'rb',
                 content: html,
-                end:function () {
+                end: function () {
                     $('.layuimini-select-bgcolor').removeClass('layui-this');
                 }
             });

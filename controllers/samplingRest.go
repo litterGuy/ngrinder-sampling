@@ -12,6 +12,23 @@ type SamplingController struct {
 	BaseController
 }
 
+// @router	/list	[get]
+func (s *SamplingController) List() {
+	page, _ := s.GetInt("page", 1)
+	pageSize, _ := s.GetInt("limit", PAGESIZE)
+	pftestId, err := s.GetInt64("pftestId")
+	if err != nil {
+		s.result.Code = 1
+		s.result.Msg = "pftestId can not be empty"
+		s.responseAjax()
+	}
+	list, total := models.SampResultGetPageByPftestId(pftestId, page, pageSize)
+	s.result.Data = list
+	s.result.Code = 0
+	s.result.Count = int(total)
+	s.responseAjax()
+}
+
 // @router	/getByPftestId	[get]
 func (s *SamplingController) GetByPftestId() {
 	pftestId, err := s.GetInt64("pftestId")

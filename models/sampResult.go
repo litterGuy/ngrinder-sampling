@@ -7,14 +7,14 @@ import (
 
 //采样结果
 type SampResult struct {
-	Id         int64
-	PftestId   int64
-	ReqId      int64
-	Rt         int
-	CreateTime time.Time
-	ReqContent string
-	Func       string
-	ReqStatus  int
+	Id              int64
+	PftestId        int64
+	ReqId           int64
+	Rt              int
+	CreateTime      time.Time
+	ReqContent      string
+	Func            string
+	ReqStatus       int
 	ApiSamplingBean ApiSamplingBean `orm:"-"`
 }
 
@@ -57,4 +57,14 @@ func SampResultGetByPftestId(pftestId int64) (*[]SampResult, error) {
 		return nil, err
 	}
 	return &sampResultList, nil
+}
+
+func SampResultGetPageByPftestId(pftestId int64, page int, pageSize int) (*[]SampResult, int64) {
+	o := orm.NewOrm()
+	var sampResultList []SampResult
+	qs := o.QueryTable(sampResultTableName())
+	qs = qs.Filter("pftest_id", pftestId)
+	total, _ := qs.Count()
+	qs.OrderBy("-id").Limit(pageSize).Offset((page - 1) * pageSize).All(&sampResultList)
+	return &sampResultList, total
 }

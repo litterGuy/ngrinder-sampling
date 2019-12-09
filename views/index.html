@@ -76,7 +76,7 @@
                     <dl class="layui-nav-child">
                         <dd class="layui-this">
                             <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd"
-                               data-one-page-mpi="m-p-i-1" data-one-page="#" target="_self">
+                               data-one-page-mpi="m-p-i-1" data-one-page="/v1/home/preview" target="_self">
                                 <i class="fa fa-tachometer"></i>
                                 <span class="layui-left-nav">todo</span>
                             </a>
@@ -85,7 +85,7 @@
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;" class="layui-menu-tips" data-type="tabAdd" data-one-page-mpi="m-p-i-2"
-                       data-one-page="page/menu.html" target="_self">
+                       data-one-page="/v1/home/scenesCreate" target="_self">
                         <i class="fa fa-cloud"></i>
                         <span class="layui-left-nav">创建压测</span>
                     </a>
@@ -126,7 +126,14 @@
         var $ = layui.jquery,
             element = layui.element,
             layer = layui.layer;
-        layuimini.initPage();
+
+        var loading = layer.load(0, {shade: false, time: 2 * 1000});
+        $('.layui-this').removeClass("layui-this");
+        layuimini.initPageTitle("/v1/home/preview", "todo");
+        layuimini.initConten("/v1/home/preview");
+        layuimini.initDevice();
+        layer.close(loading);
+
         $('.login-out').on("click", function () {
             layer.msg('退出登录成功', function () {
                 window.location = '/v1/user/logout';

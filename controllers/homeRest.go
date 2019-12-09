@@ -31,6 +31,26 @@ func (h *HomeController) ReportList() {
 	h.TplName = "report_list.html"
 }
 
+// @router	/samplingLog	[get]
+func (h *HomeController) SamplingLog() {
+	pftestId, err := h.GetInt64("pftestId")
+	if err != nil {
+		//跳转向错误页
+	}
+	h.Data["pftestId"] = pftestId
+	h.TplName = "sampling_log.html"
+}
+
+// @router	/scenesCreate	[get]
+func (h *HomeController) ScenesCreate() {
+	h.TplName = "scenes_create.html"
+}
+
+// @router	/preview	[get]
+func (h *HomeController) Preview() {
+	h.TplName = "preview.html"
+}
+
 // @router	/reportAjax	[get]
 func (h *HomeController) ReportAjax() {
 	page, _ := h.GetInt("page", 1)

@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="/static/lib/layui/css/layui.css" media="all">
+<link rel="stylesheet" href="/static/css/layuimini.css" media="all">
+<link rel="stylesheet" href="/static/css/public.css" media="all">
+<link rel="stylesheet" href="/static/lib/font-awesome/css/font-awesome.min.css" media="all">
+<!--[if lt IE 9]>
+<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<style id="layuimini-bg-color">
+</style>
+<script src="/static/lib/layui/layui.js" charset="utf-8"></script>
+<script src="/static/lib/lay-config.js" charset="utf-8"></script>
+
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="detail">查看详情</a>
+        </script>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'layuimini'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/v1/samp/list?pftestId={{.pftestId}}',
+            cols: [[
+                {field: 'Func', width: 200, title: '压测api'},
+                {field: 'CreateTime', width: 200, title: '时间'},
+                {field: 'ReqStatus', width: 90, title: '响应状态'},
+                {field: 'Rt', width: 80, title: 'RT'},
+                {field: 'ReqId', width: 120, title: 'req_api_id'},
+                {title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            layer.alert(data.ReqContent)
+        });
+
+    });
+</script>

@@ -35,7 +35,8 @@
         </div>
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
         <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="detail">查看</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="detail">查看详情</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="sampling">查看采样日志</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
     </div>
@@ -112,6 +113,16 @@
             var data = obj.data;
             if (obj.event === 'detail') {
                 window.open("{{.ngrinder_host}}/perftest/" + data.id + "/detail_report");
+            } else if (obj.event === 'sampling') {
+                var width = $('.layui-body').width() - 220;
+                layer.open({
+                    type: 2,
+                    area: [width+'px', '550px'],
+                    offset: 'auto',
+                    fixed: true,
+                    maxmin: true,
+                    content: '/v1/home/samplingLog?pftestId='+data.id
+                });
             } else if (obj.event === 'delete') {
                 layer.confirm('真的删除行么', function (index) {
                     $.get("/v1/home/reportDelete?ids=" + data.id, function (result) {

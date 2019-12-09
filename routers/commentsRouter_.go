@@ -18,6 +18,15 @@ func init() {
 
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
         beego.ControllerComments{
+            Method: "Preview",
+            Router: `/preview`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
             Method: "ReportAjax",
             Router: `/reportAjax`,
             AllowHTTPMethods: []string{"get"},
@@ -38,6 +47,24 @@ func init() {
         beego.ControllerComments{
             Method: "ReportList",
             Router: `/reportList`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
+            Method: "SamplingLog",
+            Router: `/samplingLog`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
+            Method: "ScenesCreate",
+            Router: `/scenesCreate`,
             AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,
@@ -74,6 +101,15 @@ func init() {
         beego.ControllerComments{
             Method: "GetByPftestId",
             Router: `/getByPftestId`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:SamplingController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:SamplingController"],
+        beego.ControllerComments{
+            Method: "List",
+            Router: `/list`,
             AllowHTTPMethods: []string{"get"},
             MethodParams: param.Make(),
             Filters: nil,

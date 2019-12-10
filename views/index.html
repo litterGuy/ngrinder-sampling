@@ -128,11 +128,17 @@
             layer = layui.layer;
 
         var loading = layer.load(0, {shade: false, time: 2 * 1000});
-        $('.layui-this').removeClass("layui-this");
-        layuimini.initPageTitle("/v1/home/preview", "todo");
-        layuimini.initConten("/v1/home/preview");
+        var locationHref = window.location.href;
+        if (locationHref.indexOf("#") < 0) {
+            $('.layui-this').removeClass("layui-this");
+            layuimini.initPageTitle("/v1/home/preview", "todo");
+            layuimini.initConten("/v1/home/preview");
+        }else{
+            layuimini.initPage();
+        }
         layuimini.initDevice();
         layer.close(loading);
+
 
         $('.login-out').on("click", function () {
             layer.msg('退出登录成功', function () {

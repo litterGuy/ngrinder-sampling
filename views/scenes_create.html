@@ -26,7 +26,15 @@
                 <li>添加监控</li>
             </ul>
             <div class="layui-tab-content">
-                <div class="layui-tab-item layui-show">内容1</div>
+                <div class="layui-tab-item layui-show">
+                    <form class="layui-form">
+                        <div style="margin: 30px;">
+                            <ul class="layui-timeline" id="api_template">
+
+                            </ul>
+                        </div>
+                    </form>
+                </div>
 
                 <div class="layui-tab-item">
                     <form class="layui-form">
@@ -65,11 +73,13 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;"></label>
                             <div class="layui-input-inline" style="width: 20px;">
-                                <input type="radio" id="duration_ratio" name="threshold" value="D" checked lay-filter="thresholdFilter">
+                                <input type="radio" id="duration_ratio" name="threshold" value="D" checked
+                                       lay-filter="thresholdFilter">
                             </div>
                             <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试时间</label>
                             <div class="layui-input-inline" style="width: 20px;">
-                                <input type="radio" id="run_count_radio" name="threshold" value="R" lay-filter="thresholdFilter">
+                                <input type="radio" id="run_count_radio" name="threshold" value="R"
+                                       lay-filter="thresholdFilter">
                             </div>
                             <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试次数</label>
                         </div>
@@ -138,7 +148,8 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">Ramp-Up可用</label>
                             <div class="layui-input-inline" style="width: 50px;">
-                                <input type="checkbox" id="use_ramp_up" lay-skin="switch" lay-text="ON|OFF" name="useRampUp">
+                                <input type="checkbox" id="use_ramp_up" lay-skin="switch" lay-text="ON|OFF"
+                                       name="useRampUp">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -146,7 +157,7 @@
                             <div class="layui-input-inline" style="width: 150px;">
                                 <select name="rampUpType" id="ramp_up_type">
                                     {{range $v := .agentConfig.availRampUpType}}
-                                    <option value="{{$v}}">{{if eq "PROCESS" $v}}进程{{else}}线程{{end}}</option>
+                                        <option value="{{$v}}">{{if eq "PROCESS" $v}}进程{{else}}线程{{end}}</option>
                                     {{end}}
                                 </select>
                             </div>
@@ -166,14 +177,16 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">初始等待时间</label>
                             <div class="layui-input-inline">
-                                <input id="ramp_up_init_sleep_time" name="rampUpInitSleepTime" type="text" class="layui-input"
+                                <input id="ramp_up_init_sleep_time" name="rampUpInitSleepTime" type="text"
+                                       class="layui-input"
                                        value="0"/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">MS</div>
 
                             <label class="layui-form-label" style="width: 120px;">进程增长间隔</label>
                             <div class="layui-input-inline">
-                                <input id="ramp_up_increment_interval" name="rampUpIncrementInterval" type="text" class="layui-input"
+                                <input id="ramp_up_increment_interval" name="rampUpIncrementInterval" type="text"
+                                       class="layui-input"
                                        value="1000"/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">MS</div>
@@ -218,7 +231,7 @@
     //转化成js函数，目前不起作用
     {{.agentConfig.vuserCalcScript}}
 
-    layui.use(['form', 'table', 'element', 'tableSelect'], function () {
+    layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate'], function () {
         var $ = layui.jquery,
             element = layui.element,
             form = layui.form;
@@ -254,7 +267,7 @@
             }
         });
 
-        $("#vuser_per_agent").change(function() {
+        $("#vuser_per_agent").change(function () {
             var $vuserElement = $(this);
             var processCount = $("#processes").val();
             var result = updateVuserPolicy($vuserElement.val());
@@ -262,6 +275,7 @@
 
             updateTotalVuser();
         });
+
         function updateVuserPolicy(vuser) {
             var processCount = getProcessCount(vuser);
             var threadCount = getThreadCount(vuser);
@@ -269,37 +283,41 @@
             $processes.val(processCount);
             var threads = $('#threads');
             threads.val(threadCount);
-            return [ processCount, threadCount ];
+            return [processCount, threadCount];
         }
-        $("#threads, #processes").change(function() {
+
+        $("#threads, #processes").change(function () {
             var $vuser = $("#vuser_per_agent");
             $vuser.val($("#processes").val() * $("#threads").val());
             updateTotalVuser();
         });
-        $("#agent_count").change(function() {
+        $("#agent_count").change(function () {
             updateTotalVuser();
         });
+
         function updateTotalVuser() {
             $("#total_vuser").text($("#agent_count").val() * $("#vuser_per_agent").val());
         }
 
-        form.on("radio(thresholdFilter)",function (data) {
+        form.on("radio(thresholdFilter)", function (data) {
             var val = data.value;
-            if(val == "D"){
+            if (val == "D") {
                 $("#duration").parent().parent().show();
                 $("#run_count").parent().parent().hide();
-            }else{
+            } else {
                 $("#duration").parent().parent().hide();
                 $("#run_count").parent().parent().show();
             }
         });
         form.on('switch(advancedFilter)', function (data) {
-            if(data.elem.checked){
+            if (data.elem.checked) {
                 $("#advanced_config").show();
-            }else{
+            } else {
                 $("#advanced_config").hide();
             }
 
         });
+        var apiTemplate = layui.apiTemplate;
+        apiTemplate.APITemplate($('#api_template'));
     });
 </script>

@@ -15,4 +15,5 @@ layui.config({
 }).extend({
     layuimini: "layuimini/layuimini", // layuimini扩展
     tableSelect: "tableSelect/tableSelect", // tableSelect
+    apiTemplate: "apiTemplate/apiTemplate",
 });

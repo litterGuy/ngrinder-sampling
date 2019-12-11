@@ -1,15 +1,305 @@
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <blockquote class="layui-elem-quote">仿照阿里云pts构建场景页</blockquote>
+        <blockquote class="layui-elem-quote">
+            仿照阿里云pts构建场景页
+            <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;">保存去压测</button>
+            <button type="button" class="layui-btn layui-btn-sm" style="float: right;">调试场景</button>
+            <button type="button" class="layui-btn layui-btn-sm" style="float: right;">保存配置</button>
+        </blockquote>
 
-        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">场景名</label>
+                <div class="layui-input-inline">
+                    <input name="name" type="text" class="layui-input" value=""/>
+                </div>
+            </div>
+        </form>
+
+        <hr/>
+
+        <div class="layui-tab layui-tab-brief" lay-filter="scenesFilters">
             <ul class="layui-tab-title">
                 <li class="layui-this">场景配置</li>
                 <li>施压配置</li>
                 <li>高级设置</li>
                 <li>添加监控</li>
             </ul>
-            <div class="layui-tab-content"></div>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">内容1</div>
+
+                <div class="layui-tab-item">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">代理</label>
+                            <div class="layui-input-inline">
+                                <input id="agent_count" name="agentCount" type="text" class="layui-input" value="0"/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">
+                                最大值: {{.agentConfig.regionAgentCountMap.NONE.value}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">虚拟用户数/代理</label>
+                            <div class="layui-input-inline">
+                                <input id="vuser_per_agent" name="vuserPerAgent" type="text" class="layui-input"
+                                       value="0"/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxVuserPerAgent}}</div>
+                            <label class="layui-form-label" style="width: 120px;">
+                                虚拟用户:
+                                <i id="total_vuser">0</i>
+                            </label>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">进程数</label>
+                            <div class="layui-input-inline">
+                                <input name="processes" id="processes" type="text" class="layui-input" value="0"/>
+                            </div>
+                            <label class="layui-form-label" style="width: 120px;">线程数</label>
+                            <div class="layui-input-inline">
+                                <input name="threads" id="threads" type="text" class="layui-input" value="0"/>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;"></label>
+                            <div class="layui-input-inline" style="width: 20px;">
+                                <input type="radio" id="duration_ratio" name="threshold" value="D" checked lay-filter="thresholdFilter">
+                            </div>
+                            <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试时间</label>
+                            <div class="layui-input-inline" style="width: 20px;">
+                                <input type="radio" id="run_count_radio" name="threshold" value="R" lay-filter="thresholdFilter">
+                            </div>
+                            <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试次数</label>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">测试时间</label>
+                            <div class="layui-input-inline">
+                                <input id="duration" name="duration" value="120000" class="layui-input">
+                                <input type="hidden" id="duration_hour" name="durationHour" value="1">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxRunHour}}H</div>
+                        </div>
+                        <div class="layui-form-item" style="display: none;">
+                            <label class="layui-form-label" style="width: 120px;">测试次数</label>
+                            <div class="layui-input-inline">
+                                <input id="run_count" name="runCount" type="text" class="layui-input" value="0"/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxRunCount}}</div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">显示高级配置</label>
+                            <div class="layui-input-inline">
+                                <input type="checkbox" lay-skin="switch" lay-text="ON|OFF" lay-filter="advancedFilter">
+                            </div>
+                        </div>
+
+                        <div id="advanced_config" style="display: none">
+                            <hr/>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 120px;">采样间隔</label>
+                                <div class="layui-input-inline">
+                                    <select name="samplingInterval">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="10">10</option>
+                                        <option value="30">30</option>
+                                        <option value="60">60</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 120px;">忽略采样数量</label>
+                                <div class="layui-input-inline">
+                                    <input name="ignoreSampleCount" type="text" class="layui-input" value="0"/>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">请输入要忽略的采样个数。在nGrinder里， 实际忽略的采样时间是 忽略的个数 *
+                                    采样间隔。
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="width: 120px;">测试参数</label>
+                                <div class="layui-input-inline">
+                                    <input name="param" type="text" class="layui-input" value=""/>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">
+                                    测试参数可以在脚本中通过System.getProperty('param')取得。参数只能为1〜50个字母和数字、下划线、逗号、圆点（.）或竖线（|）组成,禁止输入空格。
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">Ramp-Up可用</label>
+                            <div class="layui-input-inline" style="width: 50px;">
+                                <input type="checkbox" id="use_ramp_up" lay-skin="switch" lay-text="ON|OFF" name="useRampUp">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;"></label>
+                            <div class="layui-input-inline" style="width: 150px;">
+                                <select name="rampUpType" id="ramp_up_type">
+                                    {{range $v := .agentConfig.availRampUpType}}
+                                    <option value="{{$v}}">{{if eq "PROCESS" $v}}进程{{else}}线程{{end}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">初始数</label>
+                            <div class="layui-input-inline">
+                                <input id="ramp_up_init_count" name="rampUpInitCount" type="text" class="layui-input"
+                                       value="0"/>
+                            </div>
+                            <label class="layui-form-label" style="width: 120px;">增量</label>
+                            <div class="layui-input-inline">
+                                <input id="ramp_up_step" name="rampUpStep" type="text" class="layui-input"
+                                       value="0"/>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 120px;">初始等待时间</label>
+                            <div class="layui-input-inline">
+                                <input id="ramp_up_init_sleep_time" name="rampUpInitSleepTime" type="text" class="layui-input"
+                                       value="0"/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">MS</div>
+
+                            <label class="layui-form-label" style="width: 120px;">进程增长间隔</label>
+                            <div class="layui-input-inline">
+                                <input id="ramp_up_increment_interval" name="rampUpIncrementInterval" type="text" class="layui-input"
+                                       value="1000"/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">MS</div>
+                        </div>
+                        <hr>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </form>
+                </div>
+
+                <div class="layui-tab-item">
+                    <form class="layui-form" style="padding-left: 20px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 100px;">建立超时时间</label>
+                            <div class="layui-input-inline">
+                                <input name="timeOut" type="text" class="layui-input" value=""/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">* 500ms</div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="layui-tab-item">
+                    <form class="layui-form" style="padding-left: 20px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">监控机器</label>
+                            <div class="layui-input-inline">
+                                <input id="moniter" name="targetHosts" type="text" class="layui-input" value=""
+                                       ts-selected=""/>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">监控压测机器的性能</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    //转化成js函数，目前不起作用
+    {{.agentConfig.vuserCalcScript}}
+
+    layui.use(['form', 'table', 'element', 'tableSelect'], function () {
+        var $ = layui.jquery,
+            element = layui.element,
+            form = layui.form;
+
+        //一些事件监听
+        element.on('tab(scenesFilters)', function (data) {
+            console.log(data);
+        });
+
+        var tableSelect = layui.tableSelect;
+        tableSelect.render({
+            elem: '#moniter',	//定义输入框input对象 必填
+            checkedKey: 'id', //表格的唯一建值，非常重要，影响到选中状态 必填
+            searchKey: 'ip',	//搜索输入框的name值 默认keyword
+            searchPlaceholder: 'ip搜索',	//搜索输入框的提示文字 默认关键词搜索
+            table: {	//定义表格参数，与LAYUI的TABLE模块一致，只是无需再定义表格elem
+                url: '/v1/home/agentList',
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id', title: 'ID', width: 100},
+                    {field: 'ip', title: 'IP', width: 300},
+                    {field: 'port', title: 'PORT', width: 300}
+                ]]
+            },
+            done: function (elem, data) {
+                //选择完后的回调，包含2个返回值 elem:返回之前input对象；data:表格返回的选中的数据 []
+                //拿到data[]后 就按照业务需求做想做的事情啦~比如加个隐藏域放ID...
+                var NEWJSON = []
+                layui.each(data.data, function (index, item) {
+                    NEWJSON.push(item.ip)
+                })
+                elem.val(NEWJSON.join(","))
+            }
+        });
+
+        $("#vuser_per_agent").change(function() {
+            var $vuserElement = $(this);
+            var processCount = $("#processes").val();
+            var result = updateVuserPolicy($vuserElement.val());
+            $(this).val(result[0] * result[1]);
+
+            updateTotalVuser();
+        });
+        function updateVuserPolicy(vuser) {
+            var processCount = getProcessCount(vuser);
+            var threadCount = getThreadCount(vuser);
+            var $processes = $('#processes');
+            $processes.val(processCount);
+            var threads = $('#threads');
+            threads.val(threadCount);
+            return [ processCount, threadCount ];
+        }
+        $("#threads, #processes").change(function() {
+            var $vuser = $("#vuser_per_agent");
+            $vuser.val($("#processes").val() * $("#threads").val());
+            updateTotalVuser();
+        });
+        $("#agent_count").change(function() {
+            updateTotalVuser();
+        });
+        function updateTotalVuser() {
+            $("#total_vuser").text($("#agent_count").val() * $("#vuser_per_agent").val());
+        }
+
+        form.on("radio(thresholdFilter)",function (data) {
+            var val = data.value;
+            if(val == "D"){
+                $("#duration").parent().parent().show();
+                $("#run_count").parent().parent().hide();
+            }else{
+                $("#duration").parent().parent().hide();
+                $("#run_count").parent().parent().show();
+            }
+        });
+        form.on('switch(advancedFilter)', function (data) {
+            if(data.elem.checked){
+                $("#advanced_config").show();
+            }else{
+                $("#advanced_config").hide();
+            }
+
+        });
+    });
+</script>

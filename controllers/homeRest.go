@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
+	"html/template"
 	"strconv"
 )
 
@@ -43,6 +44,8 @@ func (h *HomeController) SamplingLog() {
 
 // @router	/scenesCreate	[get]
 func (h *HomeController) ScenesCreate() {
+	config := getAgentConfig(h.userId)
+	h.Data["agentConfig"] = config
 	h.TplName = "scenes_create.html"
 }
 
@@ -113,4 +116,58 @@ func (h *HomeController) ReportDelete() {
 		}
 	}
 	h.responseAjax()
+}
+
+// @router	/agentList	[get]
+func (h *HomeController) AgentList() {
+	page, _ := h.GetInt("page", 1)
+	pageSize, _ := h.GetInt("limit", PAGESIZE)
+	ip := h.GetString("ip")
+
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.agentList")
+	ngrinderUrl += apiUrl + "?page=" + strconv.Itoa(page-1) + "&limit=" + strconv.Itoa(pageSize)
+	if len(ip) > 0 {
+		ngrinderUrl += "&ip=" + ip
+	}
+	req := httplib.Get(ngrinderUrl)
+	var js NsResponseBean
+	rst, err := req.String()
+	if err != nil {
+		h.result.Code = 1
+		h.result.Msg = err.Error()
+	} else {
+		err = json.Unmarshal([]byte(rst), &js)
+		if err != nil {
+			h.result.Code = 1
+			h.result.Msg = rst
+		} else {
+			myMap := js.Data.(map[string]interface{})
+			h.result.Count = int(myMap["total"].(float64))
+			h.result.Data = myMap["list"]
+		}
+	}
+	h.responseAjax()
+}
+
+func getAgentConfig(userId string) map[string]interface{} {
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.agentConfig")
+	ngrinderUrl += apiUrl + "?userId=" + userId
+	req := httplib.Get(ngrinderUrl)
+	var js NsResponseBean
+	rst, err := req.String()
+	if err != nil {
+		return nil
+	} else {
+		err = json.Unmarshal([]byte(rst), &js)
+		if err != nil {
+			return nil
+		} else {
+			myMap := js.Data.(map[string]interface{})
+			//将js模板化
+			myMap["vuserCalcScript"] = template.JS(myMap["vuserCalcScript"].(string))
+			return myMap
+		}
+	}
 }

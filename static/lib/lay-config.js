@@ -14,4 +14,5 @@ layui.config({
     version: true
 }).extend({
     layuimini: "layuimini/layuimini", // layuimini扩展
+    tableSelect: "tableSelect/tableSelect", // tableSelect
 });

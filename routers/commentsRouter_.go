@@ -9,6 +9,15 @@ func init() {
 
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
         beego.ControllerComments{
+            Method: "AgentList",
+            Router: `/agentList`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
             Method: "Index",
             Router: `/index`,
             AllowHTTPMethods: []string{"get"},

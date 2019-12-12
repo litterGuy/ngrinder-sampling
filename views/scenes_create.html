@@ -347,7 +347,7 @@
             var sdata = data.field;
             //组装参数，发送请求
             var scenes = {};
-            scenes.id = sdata.id;
+            scenes.id = sdata.id == '' ? '0' : sdata.id;
             scenes.name = sdata.name;
             scenes.ignoreSampleCount = sdata.ignoreSampleCount;
             scenes.targetHosts = sdata.targetHosts;
@@ -372,8 +372,8 @@
             var apiElem = $('#api_template').find('li[name="scenes_li_element"]');
             for (var i = 0; i < apiElem.length; i++) {
                 var apiPms = {};
-                apiPms.testPmsId = sdata.id;
-                apiPms.sort = i;
+                apiPms.testPmsId = scenes.id;
+                apiPms.sort = i+'';
                 if ($(apiElem[i]).find('input[name="apiName"]').length > 0) {
                     //api请求参数
                     apiPms.apiName = $(apiElem[i]).find('input[name="apiName"]').val();
@@ -381,9 +381,38 @@
                     apiPms.method = $(apiElem[i]).find('select[name="requestMethod"]').val();
                     apiPms.timeout = $(apiElem[i]).find('input[name="requestTimeout"]').val();
                     apiPms.url = $(apiElem[i]).find('textarea[name="desc"]').val();
+                    //设置paramsList
+                    if (apiPms.method == 'POST' || apiPms.method == 'PUT') {
+                        apiPms.contentType = $(apiElem[i]).find('input[name="params_method_content_type"]').val();
+                        if (apiPms.contentType == 'application/json') {
+                            var body = $(apiElem[i]).find('textarea[name="paramsBody"]').val();
+                            if (typeof body == 'undefined') {
+                                layer.msg('body参数不可为空');
+                                return false;
+                            }
+                            apiPms.body = body;
+                        } else {
+                            var paramList = [];
+                            var paramsElem = $(apiElem[i]).find('table[name="params_table"] tr');
+                            var paramsIdx = 0;
+                            for (var k = 0; k < paramsElem.length; k++) {
+                                var params = {};
+                                var name = $(paramsElem[k]).find('input[name="paramsName"]').val();
+                                if (name == '' || name == 'undefined' || typeof name == 'undefined') {
+                                    continue;
+                                }
+                                params.name = name;
+                                var paramsvue = $(paramsElem[k]).find('input[name="paramsValue"]').val();
+                                params.value = typeof paramsvue == 'undefined' ? '' : paramsvue;
+                                paramList[paramsIdx++] = params;
+                            }
+                            apiPms.paramList = paramList;
+                        }
+                    }
                     //设置header
                     var headerList = [];
                     var headerElem = $(apiElem[i]).find('table[name="header_table"] tr');
+                    var headerIdx = 0;
                     for (var k = 0; k < headerElem.length; k++) {
                         var header = {};
                         var name = $(headerElem[k]).find('input[name="headerName"]').val();
@@ -393,12 +422,13 @@
                         header.name = name;
                         var headvue = $(headerElem[k]).find('input[name="headerValue"]').val();
                         header.value = typeof headvue == 'undefined' ? '' : headvue;
-                        headerList[k] = header;
+                        headerList[headerIdx++] = header;
                     }
                     apiPms.headerList = headerList;
                     //设置出参
                     var outParamsList = [];
                     var outParamsElem = $(apiElem[i]).find('table[name="outpms_table"] tr');
+                    var outParamsIdx = 0;
                     for (var k = 0; k < outParamsElem.length; k++) {
                         var outParams = {};
                         var name = $(outParamsElem[k]).find('input[name="outName"]').val();
@@ -409,12 +439,13 @@
                         outParams.source = $(outParamsElem[k]).find('select[name="outSource"]').val();
                         outParams.resolveExpress = $(outParamsElem[k]).find('input[name="outResolveExpress"]').val();
                         outParams.index = $(outParamsElem[k]).find('input[name="outIndex"]').val();
-                        outParamsList[k] = outParams;
+                        outParamsList[outParamsIdx++] = outParams;
                     }
                     apiPms.outParamsList = outParamsList;
                     //设置断言
                     var assertionList = [];
                     var assertionElem = $(apiElem[i]).find('table[name="assertion_table"] tr');
+                    var assertIdx = 0;
                     for (var k = 0; k < assertionElem.length; k++) {
                         var assertion = {};
                         var type = $(assertionElem[k]).find('select[name="assertionType"]').val();
@@ -429,18 +460,18 @@
                         if (typeof factor == "undefined") {
                             continue;
                         }
-                        var content = $(assertionElem[k]).find('select[name="assertionContent"]').val();
+                        var content = $(assertionElem[k]).find('input[name="assertionContent"]').val();
                         assertion.type = type;
                         assertion.name = name;
                         assertion.factor = factor;
                         assertion.content = typeof content == 'undefined' ? '' : content;
-                        assertionList[k] = assertion;
+                        assertionList[assertIdx++] = assertion;
                     }
                     apiPms.assertionList = assertionList;
                 } else {
                     //集合点
                     apiPms.apiName = '集合点';
-                    apiPms.type = 2;
+                    apiPms.type = '2';
                     apiPms.method = 'none';
                     apiPms.url = 'none';
                     apiPms.waitTime = $(apiElem[i]).find('input[name="waitTime"]').val();
@@ -449,7 +480,18 @@
                 requestPmsList[i] = apiPms;
             }
             scenes.requestPmsList = requestPmsList;
-            console.log(scenes);
+            //发送请求
+            $.ajax({
+                url: '/v1/scenes/create',
+                type: 'POST',
+                datType: 'JSON',
+                contentType: 'application/json',
+                data: JSON.stringify(scenes),
+                async: false,
+                success: function (result) {
+                    console.log(result);
+                }
+            });
             return false;
         });
     });

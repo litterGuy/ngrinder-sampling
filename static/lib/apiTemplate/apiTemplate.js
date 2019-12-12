@@ -24,17 +24,19 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '		<div class="layui-form-item">'
                 + '			<div class="layui-input-inline">'
                 + '				<input type="text" class="layui-input" required lay-verify="required" placeholder="请输入压测api名称" name="apiName"/>'
+                + '				<input type="hidden" name="id" value=""/>'
                 + '			</div>'
                 + '			<div class="layui-form-mid layui-word-aux">请配置压测api</div>'
                 + '			<div class="layui-input-inline" style="float: right;width:285px;">'
                 + '				<button type="button" class="layui-btn" name="api_add_btn">新增API</button>'
-                + '              <button type="button" class="layui-btn" name="api_ponit_add_btn">新增集合点</button>'
+                + '				<button type="button" class="layui-btn" name="api_ponit_add_btn">新增集合点</button>'
                 + '				<button type="button" class="layui-btn layui-btn-danger" name="api_delete_btn">删除</button>'
                 + '			</div>'
                 + '		</div>'
                 + '		<div class="layui-tab layui-tab-brief">'
                 + '			<ul class="layui-tab-title">'
                 + '				<li class="layui-this">基本请求信息</li>'
+                + '				<li name="params_tab_body" style="display:none;">Body定义</li>'
                 + '				<li>Header定义</li>'
                 + '				<li>出参定义</li>'
                 + '				<li>检查点（断言）</li>'
@@ -51,7 +53,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '					<div class="layui-form-item">'
                 + '						<label class="layui-form-label">请求方式</label>'
                 + '						<div class="layui-input-inline">'
-                + '							<select name="requestMethod">'
+                + '							<select name="requestMethod" lay-filter="apiMethodFilter">'
                 + '								<option value="GET">GET</option>'
                 + '								<option value="POST">POST</option>'
                 + '								<option value="PUT">PUT</option>'
@@ -67,9 +69,47 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '						<label class="layui-form-label">登陆请求</label>'
                 + '						<div class="layui-input-inline">'
                 + '							<input type="checkbox" lay-skin="switch" lay-text="ON|OFF"'
-                + '								   name="type" value="1" lay-filter="apiTypeSwitchFilter"/>'
+                + '								    name="type" value="1" lay-filter="apiTypeSwitchFilter"/>'
                 + '						</div>'
                 + '						<div class="layui-form-mid layui-word-aux">链路中只有一个登陆请求</div>'
+                + '					</div>'
+                + '				</div>'
+                + '				<div class="layui-tab-item">'
+                + '                  <input type="hidden" name="params_method_content_type" value="application/x-www-form-urlencoded"/>'
+                + '					<label class="layui-form-label" style="width: 100px;">Content-Type：</label>'
+                + '					<div class="layui-input-inline" style="width: 190px;">'
+                + '						<button type="button" class="layui-btn layui-btn-normal" name="contentType" sampContentType="0">x-www-form-urlencode</button>'
+                + '					</div>'
+                + '					<div class="layui-input-inline" style="width: 120px;">'
+                + '						<button type="button" class="layui-btn layui-btn-primary" name="contentType" sampContentType="1">raw</button>'
+                + '					</div>'
+                + '					<div name="params_form_table">'
+                + '						<table class="layui-table" name="params_table">'
+                + '						  <colgroup>'
+                + '							<col>'
+                + '							<col>'
+                + '							<col>'
+                + '						  </colgroup>'
+                + '						  <thead>'
+                + '							<tr>'
+                + '							  <th>key</th>'
+                + '							  <th>value</th>'
+                + '							  <th>操作</th>'
+                + '							</tr> '
+                + '						  </thead>'
+                + '						  <tbody>'
+                + '							<tr>'
+                + '							  <td><input type="text" class="layui-input" name="paramsName" placeholder="输入Key"/></td>'
+                + '							  <td><input type="text" class="layui-input" name="paramsValue" placeholder="输入Value"/></td>'
+                + '							  <td><button type="button" class="layui-btn" name="params_delete_btn">删除</button></td>'
+                + '							</tr>'
+                + '						  </tbody>'
+                + '						</table>'
+                + '						<button type="button" class="layui-btn" name="params_add_btn">增加</button>'
+                + '					</div>'
+                + '					<div class="layui-input-block" style="display:none;margin: 30px 0 0 10px;">'
+                + '						<textarea name="paramsBody" placeholder="如果服务端（被压测端）需要强校验换行符（\n）或者待加密的部分需要有换行符，请使用unescape解码函数对包含换行符的字符串进行反转义：${sys.unescapeJava(text)}"'
+                + '								  class="layui-textarea"></textarea>'
                 + '					</div>'
                 + '				</div>'
                 + '				<div class="layui-tab-item">'
@@ -360,8 +400,52 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 $other.removeClass('layui-btn-normal');
                 $other.addClass('layui-btn-primary');
             });
+
+            //body绑定事件
+            $('button[name="contentType"]').off('click').on('click', function () {
+                var val = $(this).attr('sampcontenttype');
+                var $div = $(this).closest('li');
+                var $other;
+                if (val == 0) {
+                    $other = $(this).parent().next().find('button');
+                    $div.find('div[name="params_form_table"]').show();
+                    $div.find('textarea[name="paramsBody"]').parent().hide();
+                    $div.find('input[type="hidden"][name="params_method_content_type"]').val('application/x-www-form-urlencoded');
+                } else if (val == '1') {
+                    $other = $(this).parent().prev().find('button');
+                    $div.find('div[name="params_form_table"]').hide();
+                    $div.find('textarea[name="paramsBody"]').parent().show();
+                    $div.find('input[type="hidden"][name="params_method_content_type"]').val('application/json');
+                }
+                $(this).removeClass('layui-btn-primary');
+                $(this).removeClass('layui-btn-normal');
+                $(this).addClass('layui-btn-normal');
+                $other.removeClass('layui-btn-primary');
+                $other.removeClass('layui-btn-normal');
+                $other.addClass('layui-btn-primary');
+            });
+            //body事件
+            $('button[name="params_add_btn"]').off("click").on('click', function () {
+                var tr = $(this).prev('table[name="params_table"]').find('tbody tr:eq(0)').prop("outerHTML");
+                $(this).prev('table[name="params_table"]').append(tr);
+                clearData($(this).prev('table[name="params_table"] tr:last'));
+
+                deleteBtnPms($('button[name="params_delete_btn"]'));
+                layui.form.render();
+            });
+            deleteBtnPms($('button[name="params_delete_btn"]'));
+
+            //api method select事件
+            form.on('select(apiMethodFilter)', function (data) {
+                var $div = $(this).closest('li');
+                if (data.value == 'POST' || data.value == 'PUT') {
+                    $div.find('li[name="params_tab_body"]').show();
+                } else {
+                    $div.find('li[name="params_tab_body"]').hide();
+                }
+            });
         };
-    }
+    };
 
     //数据源文件
     $('body').on('click', '[data-file-upload]', function () {

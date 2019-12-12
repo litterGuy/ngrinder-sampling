@@ -1,11 +1,16 @@
 package controllers
 
 import (
+	"bufio"
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"html/template"
+	"os"
+	"path"
 	"strconv"
+	"strings"
+	"time"
 )
 
 //http://layuimini-onepage.99php.cn/#/page/icon.html
@@ -148,6 +153,78 @@ func (h *HomeController) AgentList() {
 		}
 	}
 	h.responseAjax()
+}
+
+// @router	/uploadDataFile	[post]
+func (h *HomeController) UploadDataFile() {
+	file, header, err := h.GetFile("uploadFile")
+	oldPath := h.GetString("oldPath", "")
+	if err != nil {
+		h.result.Code = 1
+		h.result.ErrMsg = err.Error()
+		h.responseAjax()
+	}
+	ext := path.Ext(header.Filename)
+	if !strings.Contains(ext, "csv") {
+		h.result.Code = 1
+		h.result.ErrMsg = "file type is not csv"
+		h.responseAjax()
+	}
+	//解析文件，确认有几个参数
+	lineNum := 0
+	br := bufio.NewReader(file)
+	for {
+		line, _, c := br.ReadLine()
+		if c != nil {
+			break
+		}
+		str := string(line)
+		lineNum = strings.Count(str, ",")
+		break
+	}
+	h.result.Count = lineNum + 1
+	//保存文件
+	uploadDir := "static/upload/" + time.Now().Format("20060102")
+	_ = os.MkdirAll(uploadDir, 777)
+	fpath := uploadDir + header.Filename
+	defer file.Close() //关闭上传的文件，不然的话会出现临时文件不能清除的情况
+	err = h.SaveToFile("uploadFile", fpath)
+	defer os.Remove(fpath)
+	if err != nil {
+		h.result.Code = 1
+		h.result.ErrMsg = err.Error()
+		h.responseAjax()
+	}
+	//将资源上传到ngrinder服务
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.uploadData")
+	ngrinderUrl += apiUrl
+
+	req := httplib.Post(ngrinderUrl)
+	req.Param("userId", h.userId)
+	req.Param("oldPath", oldPath)
+	req.PostFile("uploadFile", fpath)
+	var js NsResponseBean
+	rst, err := req.String()
+	if err != nil {
+		h.result.Code = 1
+		h.result.ErrMsg = err.Error()
+		h.responseAjax()
+	} else {
+		err = json.Unmarshal([]byte(rst), &js)
+		if err != nil {
+			h.result.Code = 1
+			h.result.ErrMsg = err.Error()
+			h.responseAjax()
+		} else {
+			more := make(map[string]interface{})
+			more["fileName"] = header.Filename
+			h.result.Code = js.Code
+			h.result.ErrMsg = js.ErrMsg
+			h.result.Data = js.Data
+			h.responseAjaxMore(more)
+		}
+	}
 }
 
 func getAgentConfig(userId string) map[string]interface{} {

@@ -1,6 +1,10 @@
 package controllers
 
-import "github.com/astaxie/beego"
+import (
+	"encoding/json"
+	"github.com/astaxie/beego"
+	"ngrinder-sampling/utils"
+)
 
 const (
 	SESSION_NAME = "user_login_id"
@@ -31,6 +35,15 @@ func (b *BaseController) Prepare() {
 //handle the result
 func (b *BaseController) responseAjax() {
 	b.Data["json"] = b.result
+	b.ServeJSON()
+	b.StopRun()
+}
+
+func (b *BaseController) responseAjaxMore(more map[string]interface{}) {
+	dst, _ := json.Marshal(b.result)
+	src, _ := json.Marshal(more)
+	result := utils.JSONMerger(dst, src)
+	b.Data["json"] = result
 	b.ServeJSON()
 	b.StopRun()
 }

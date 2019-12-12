@@ -17,13 +17,13 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
 
         //增加api模板
         this.APITemplate = function (elem) {
-            var api = '<li class="layui-timeline-item">'
+            var api = '<li class="layui-timeline-item" name="scenes_li_element">'
                 + '	<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
                 + '	<div class="layui-timeline-content layui-text" style="padding-top: 10px;">'
                 + '		<hr style="margin-bottom: 25px;"/>'
                 + '		<div class="layui-form-item">'
                 + '			<div class="layui-input-inline">'
-                + '				<input type="text" class="layui-input" placeholder="请输入压测api名称">'
+                + '				<input type="text" class="layui-input" required lay-verify="required" placeholder="请输入压测api名称" name="apiName"/>'
                 + '			</div>'
                 + '			<div class="layui-form-mid layui-word-aux">请配置压测api</div>'
                 + '			<div class="layui-input-inline" style="float: right;width:285px;">'
@@ -44,7 +44,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '					<div class="layui-form-item">'
                 + '						<label class="layui-form-label">压测url</label>'
                 + '						<div class="layui-input-block">'
-                + '							<textarea name="desc" placeholder="请输入一个完整的URL，不能包含空格、换行等非法字符"'
+                + '							<textarea name="desc" required lay-verify="required|url" placeholder="请输入一个完整的URL，不能包含空格、换行等非法字符"'
                 + '									  class="layui-textarea"></textarea>'
                 + '						</div>'
                 + '					</div>'
@@ -60,14 +60,14 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '						</div>'
                 + '						<label class="layui-form-label">超时时间</label>'
                 + '						<div class="layui-input-inline">'
-                + '							<input type="text" class="layui-input" name="requestTimeout"'
+                + '							<input type="text" class="layui-input" lay-verify="number" name="requestTimeout"'
                 + '								   value="5000"/>'
                 + '						</div>'
                 + '						<div class="layui-form-mid layui-word-aux">ms</div>'
                 + '						<label class="layui-form-label">登陆请求</label>'
                 + '						<div class="layui-input-inline">'
                 + '							<input type="checkbox" lay-skin="switch" lay-text="ON|OFF"'
-                + '								   lay-filter=""/>'
+                + '								   name="type" value="1" lay-filter="apiTypeSwitchFilter"/>'
                 + '						</div>'
                 + '						<div class="layui-form-mid layui-word-aux">链路中只有一个登陆请求</div>'
                 + '					</div>'
@@ -88,8 +88,8 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '					  </thead>'
                 + '					  <tbody>'
                 + '						<tr>'
-                + '						  <td><input type="text" class="layui-input" placeholder="输入Header Key"/></td>'
-                + '						  <td><input type="text" class="layui-input" placeholder="输入Header Value"/></td>'
+                + '						  <td><input type="text" class="layui-input" name="headerName" placeholder="输入Header Key"/></td>'
+                + '						  <td><input type="text" class="layui-input" name="headerValue" placeholder="输入Header Value"/></td>'
                 + '						  <td><button type="button" class="layui-btn" name="header_delete_btn">删除</button></td>'
                 + '						</tr>'
                 + '					  </tbody>'
@@ -116,9 +116,9 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '					  </thead>'
                 + '					  <tbody>'
                 + '						<tr>'
-                + '						  <td><input type="text" class="layui-input" placeholder="输入出参名"/></td>'
+                + '						  <td><input type="text" class="layui-input" placeholder="输入出参名" name="outName"/></td>'
                 + '						  <td>'
-                + '							 <select name="requestSource">'
+                + '							 <select name="outSource">'
                 + '								<option value="0">Body:TEXT</option>'
                 + '								<option value="1">Body:JSON</option>'
                 + '								<option value="2">Header:K/V</option>'
@@ -126,8 +126,8 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '								<option value="4">响应状态码</option>'
                 + '							</select>'
                 + '						  </td>'
-                + '						  <td><input type="text" class="layui-input" placeholder="输入出参提取表达式"/></td>'
-                + '						  <td><input type="text" class="layui-input"/></td>'
+                + '						  <td><input type="text" class="layui-input" placeholder="输入出参提取表达式" name="outResolveExpress"/></td>'
+                + '						  <td><input type="text" class="layui-input" lay-verify="number" value="0" name="outIndex"/></td>'
                 + '						  <td><button type="button" class="layui-btn" name="outpms_delete_btn">删除</button></td>'
                 + '						</tr>'
                 + '					  </tbody>'
@@ -155,7 +155,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '					  <tbody>'
                 + '						<tr>'
                 + '						  <td>'
-                + '							<select name="requestAssertType">'
+                + '							<select name="assertionType">'
                 + '								<option value="0">响应header</option>'
                 + '								<option value="1">响应状态码</option>'
                 + '								<option value="2">响应body</option>'
@@ -163,10 +163,10 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '							</select>'
                 + '						  </td>'
                 + '						  <td>'
-                + '							 <input type="text" class="layui-input" placeholder="输入检查对象"/>'
+                + '							 <input type="text" class="layui-input" placeholder="输入检查对象" name="assertionName"/>'
                 + '						  </td>'
                 + '						  <td>'
-                + '							<select name="requestAssertOpt">'
+                + '							<select name="assertionFactor">'
                 + '								<option value=">">大于</option>'
                 + '								<option value=">=">大于等于</option>'
                 + '								<option value="<">小于</option>'
@@ -174,7 +174,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '								<option value="=">等于</option>'
                 + '							</select>'
                 + '						  </td>'
-                + '						  <td><input type="text" class="layui-input" placeholder="请输入期望值，可与本API实用到的参数变量对比"/></td>'
+                + '						  <td><input type="text" class="layui-input" placeholder="请输入期望值，可与本API实用到的参数变量对比" name="assertionContent"/></td>'
                 + '						  <td><button type="button" class="layui-btn" name="assertion_delete_btn">删除</button></td>'
                 + '						</tr>'
                 + '					  </tbody>'
@@ -201,7 +201,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
 
         //增加集合点模板
         this.APIConsolidationPointTemplate = function (elem) {
-            var api = '<li class="layui-timeline-item">'
+            var api = '<li class="layui-timeline-item" name="scenes_li_element">'
                 + '	<i class="layui-icon layui-timeline-axis">&#xe63f;</i>'
                 + '	<div class="layui-timeline-content layui-text" style="padding-top: 10px;">'
                 + '		<hr style="margin-bottom: 25px;"/>'
@@ -226,14 +226,14 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '		<div class="layui-form-item">'
                 + '			<label class="layui-form-label">等待时间</label>'
                 + '			<div class="layui-input-inline">'
-                + '				<input name="waitTime" type="text" class="layui-input" placeholder="取值范围:(0,3600]" />'
+                + '				<input name="waitTime" type="text" class="layui-input" lay-verify="number" placeholder="取值范围:(0,3600]" value="0"/>'
                 + '			</div>'
                 + '			<div class="layui-form-mid layui-word-aux">s</div>'
                 + '		</div>'
                 + '		<div class="layui-form-item" style="display: none;">'
                 + '			<label class="layui-form-label">用户量</label>'
                 + '			<div class="layui-input-inline">'
-                + '				<input name="waitVuserNum" type="text" class="layui-input" placeholder="取值范围(0,1000000]"/>'
+                + '				<input name="waitVuserNum" type="text" class="layui-input" lay-verify="number" placeholder="取值范围(0,1000000]" value="0"/>'
                 + '			</div>'
                 + '			<div class="layui-form-mid layui-word-aux">分布式施压系统会出现低比例的施压机异常失联的情况，剩余可用机器量级准备完成之后进行放量。</div>'
                 + '		</div>'
@@ -276,6 +276,10 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 apiTemplate.APIConsolidationPointTemplate($(this));
             });
 
+            //是否为登陆请求
+            form.on('switch(apiTypeSwitchFilter)', function () {
+                $(this).parent().find("input[name='type']").val(this.checked ? 0 : 1);
+            })
             //header事件
             $('button[name="header_add_btn"]').off("click").on('click', function () {
                 var tr = $(this).prev('table[name="header_table"]').find('tbody tr:eq(0)').prop("outerHTML");

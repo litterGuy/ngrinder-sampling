@@ -1,49 +1,56 @@
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <blockquote class="layui-elem-quote">
-            创建压测
-            <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;">保存去压测</button>
-            <button type="button" class="layui-btn layui-btn-sm" style="float: right;">调试场景</button>
-            <button type="button" class="layui-btn layui-btn-sm" style="float: right;">保存配置</button>
-            <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-file-upload="数据源管理" style="float: right;">数据源管理</button>
-            <input type="hidden" id="scenes_datafile_json" value=""/>
-        </blockquote>
-
         <form class="layui-form">
+            <blockquote class="layui-elem-quote">
+                创建压测
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;">保存去压测
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right;">调试场景</button>
+                <button type="button" class="layui-btn layui-btn-sm" id="btn_scenes_save" lay-submit
+                        lay-filter="formScenesSaveFilter" style="float: right;">保存配置
+                </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-file-upload="数据源管理"
+                        style="float: right;">数据源管理
+                </button>
+                <input type="hidden" id="scenes_datafile_json" value=""/>
+            </blockquote>
+
+
             <div class="layui-form-item">
                 <label class="layui-form-label">场景名</label>
                 <div class="layui-input-inline">
-                    <input name="name" type="text" class="layui-input" value=""/>
+                    <input name="name" type="text" required lay-verify="required" class="layui-input" value=""
+                           placeholder="请输入场景名称" autocomplete="off"/>
+                    <input name="id" type="hidden" value=""/>
                 </div>
             </div>
-        </form>
 
-        <hr/>
+            <hr/>
 
-        <div class="layui-tab layui-tab-brief" lay-filter="scenesFilters">
-            <ul class="layui-tab-title">
-                <li class="layui-this">场景配置</li>
-                <li>施压配置</li>
-                <li>高级设置</li>
-                <li>添加监控</li>
-            </ul>
-            <div class="layui-tab-content">
-                <div class="layui-tab-item layui-show">
-                    <form class="layui-form">
+            <div class="layui-tab layui-tab-brief" lay-filter="scenesFilters">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">场景配置</li>
+                    <li>施压配置</li>
+                    <li>高级设置</li>
+                    <li>添加监控</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
                         <div style="margin: 30px;">
                             <ul class="layui-timeline" id="api_template">
 
                             </ul>
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="layui-tab-item">
-                    <form class="layui-form">
+                    <div class="layui-tab-item">
+
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">代理</label>
                             <div class="layui-input-inline">
-                                <input id="agent_count" name="agentCount" type="text" class="layui-input" value="0"/>
+                                <input id="agent_count" name="agentCount" required lay-verify="required|number"
+                                       type="text" class="layui-input"
+                                       value=""/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">
                                 最大值: {{.agentConfig.regionAgentCountMap.NONE.value}}</div>
@@ -51,8 +58,9 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">虚拟用户数/代理</label>
                             <div class="layui-input-inline">
-                                <input id="vuser_per_agent" name="vuserPerAgent" type="text" class="layui-input"
-                                       value="0"/>
+                                <input id="vuser_per_agent" name="vuserPerAgent" required lay-verify="required|number"
+                                       type="text" class="layui-input"
+                                       value=""/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxVuserPerAgent}}</div>
                             <label class="layui-form-label" style="width: 120px;">
@@ -63,11 +71,13 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">进程数</label>
                             <div class="layui-input-inline">
-                                <input name="processes" id="processes" type="text" class="layui-input" value="0"/>
+                                <input name="processes" id="processes" required lay-verify="required|number" type="text"
+                                       class="layui-input" value=""/>
                             </div>
                             <label class="layui-form-label" style="width: 120px;">线程数</label>
                             <div class="layui-input-inline">
-                                <input name="threads" id="threads" type="text" class="layui-input" value="0"/>
+                                <input name="threads" id="threads" required lay-verify="required|number" type="text"
+                                       class="layui-input" value=""/>
                             </div>
                         </div>
 
@@ -78,18 +88,21 @@
                                 <input type="radio" id="duration_ratio" name="threshold" value="D" checked
                                        lay-filter="thresholdFilter">
                             </div>
-                            <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试时间</label>
+                            <label class="layui-form-label"
+                                   style="width: 60px;padding: 9px 40px 9px 0;">测试时间</label>
                             <div class="layui-input-inline" style="width: 20px;">
                                 <input type="radio" id="run_count_radio" name="threshold" value="R"
                                        lay-filter="thresholdFilter">
                             </div>
-                            <label class="layui-form-label" style="width: 60px;padding: 9px 40px 9px 0;">测试次数</label>
+                            <label class="layui-form-label"
+                                   style="width: 60px;padding: 9px 40px 9px 0;">测试次数</label>
                         </div>
 
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">测试时间</label>
                             <div class="layui-input-inline">
-                                <input id="duration" name="duration" value="120000" class="layui-input">
+                                <input id="duration" name="duration" value="120000" lay-verify="number"
+                                       class="layui-input">
                                 <input type="hidden" id="duration_hour" name="durationHour" value="1">
                             </div>
                             <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxRunHour}}H</div>
@@ -97,7 +110,8 @@
                         <div class="layui-form-item" style="display: none;">
                             <label class="layui-form-label" style="width: 120px;">测试次数</label>
                             <div class="layui-input-inline">
-                                <input id="run_count" name="runCount" type="text" class="layui-input" value="0"/>
+                                <input id="run_count" name="runCount" type="text" lay-verify="number"
+                                       class="layui-input" value="0"/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">最大值: {{.agentConfig.maxRunCount}}</div>
                         </div>
@@ -105,7 +119,8 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">显示高级配置</label>
                             <div class="layui-input-inline">
-                                <input type="checkbox" lay-skin="switch" lay-text="ON|OFF" lay-filter="advancedFilter">
+                                <input type="checkbox" lay-skin="switch" lay-text="ON|OFF"
+                                       lay-filter="advancedFilter">
                             </div>
                         </div>
 
@@ -129,9 +144,11 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label" style="width: 120px;">忽略采样数量</label>
                                 <div class="layui-input-inline">
-                                    <input name="ignoreSampleCount" type="text" class="layui-input" value="0"/>
+                                    <input name="ignoreSampleCount" type="text" class="layui-input" lay-verify="number"
+                                           value="0"/>
                                 </div>
-                                <div class="layui-form-mid layui-word-aux">请输入要忽略的采样个数。在nGrinder里， 实际忽略的采样时间是 忽略的个数 *
+                                <div class="layui-form-mid layui-word-aux">请输入要忽略的采样个数。在nGrinder里， 实际忽略的采样时间是 忽略的个数
+                                    *
                                     采样间隔。
                                 </div>
                             </div>
@@ -151,7 +168,7 @@
                             <label class="layui-form-label" style="width: 120px;">Ramp-Up可用</label>
                             <div class="layui-input-inline" style="width: 50px;">
                                 <input type="checkbox" id="use_ramp_up" lay-skin="switch" lay-text="ON|OFF"
-                                       name="useRampUp">
+                                       name="useRampUp" value="F" lay-filter="useRampUpSwitchFilter">
                             </div>
                         </div>
                         <div class="layui-form-item">
@@ -167,12 +184,14 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 120px;">初始数</label>
                             <div class="layui-input-inline">
-                                <input id="ramp_up_init_count" name="rampUpInitCount" type="text" class="layui-input"
+                                <input id="ramp_up_init_count" name="rampUpInitCount" type="text"
+                                       class="layui-input" lay-verify="number"
                                        value="0"/>
                             </div>
                             <label class="layui-form-label" style="width: 120px;">增量</label>
                             <div class="layui-input-inline">
                                 <input id="ramp_up_step" name="rampUpStep" type="text" class="layui-input"
+                                       lay-verify="number"
                                        value="0"/>
                             </div>
                         </div>
@@ -180,6 +199,7 @@
                             <label class="layui-form-label" style="width: 120px;">初始等待时间</label>
                             <div class="layui-input-inline">
                                 <input id="ramp_up_init_sleep_time" name="rampUpInitSleepTime" type="text"
+                                       lay-verify="number"
                                        class="layui-input"
                                        value="0"/>
                             </div>
@@ -188,6 +208,7 @@
                             <label class="layui-form-label" style="width: 120px;">进程增长间隔</label>
                             <div class="layui-input-inline">
                                 <input id="ramp_up_increment_interval" name="rampUpIncrementInterval" type="text"
+                                       lay-verify="number"
                                        class="layui-input"
                                        value="1000"/>
                             </div>
@@ -197,23 +218,19 @@
                         <br/>
                         <br/>
                         <br/>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="layui-tab-item">
-                    <form class="layui-form" style="padding-left: 20px;">
+                    <div class="layui-tab-item">
                         <div class="layui-form-item">
                             <label class="layui-form-label" style="width: 100px;">建立超时时间</label>
                             <div class="layui-input-inline">
-                                <input name="timeOut" type="text" class="layui-input" value=""/>
+                                <input name="timeOut" type="text" class="layui-input" lay-verify="number" value="0"/>
                             </div>
                             <div class="layui-form-mid layui-word-aux">* 500ms</div>
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="layui-tab-item">
-                    <form class="layui-form" style="padding-left: 20px;">
+                    <div class="layui-tab-item">
                         <div class="layui-form-item">
                             <label class="layui-form-label">监控机器</label>
                             <div class="layui-input-inline">
@@ -222,10 +239,10 @@
                             </div>
                             <div class="layui-form-mid layui-word-aux">监控压测机器的性能</div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -319,7 +336,121 @@
             }
 
         });
+        form.on('switch(useRampUpSwitchFilter)', function () {
+            $("input[name='useRampUp']").val(this.checked ? 'T' : 'F');
+        })
         var apiTemplate = layui.apiTemplate;
         apiTemplate.APITemplate($('#api_template'));
+
+        //监听提交
+        form.on('submit(formScenesSaveFilter)', function (data) {
+            var sdata = data.field;
+            //组装参数，发送请求
+            var scenes = {};
+            scenes.id = sdata.id;
+            scenes.name = sdata.name;
+            scenes.ignoreSampleCount = sdata.ignoreSampleCount;
+            scenes.targetHosts = sdata.targetHosts;
+            scenes.useRampUp = 'useRampUp' in sdata ? sdata.useRampUp : 'F';
+            scenes.threshold = sdata.threshold;
+            scenes.duration = sdata.duration;
+            scenes.runCount = sdata.runCount;
+            scenes.agentCount = sdata.agentCount;
+            scenes.vuserPerAgent = sdata.vuserPerAgent;
+            scenes.processes = sdata.processes;
+            scenes.rampUpInitCount = sdata.rampUpInitCount;
+            scenes.rampUpInitSleepTime = sdata.rampUpInitSleepTime;
+            scenes.rampUpStep = sdata.rampUpStep;
+            scenes.rampUpIncrementInterval = sdata.rampUpIncrementInterval;
+            scenes.threads = sdata.threads;
+            scenes.samplingInterval = sdata.samplingInterval;
+            scenes.param = sdata.param;
+            var datafile_tmp = $('#scenes_datafile_json').val();
+            scenes.fileDataList = datafile_tmp == '' ? [] : JSON.parse(datafile_tmp);
+            //收集api信息
+            var requestPmsList = [];
+            var apiElem = $('#api_template').find('li[name="scenes_li_element"]');
+            for (var i = 0; i < apiElem.length; i++) {
+                var apiPms = {};
+                apiPms.testPmsId = sdata.id;
+                apiPms.sort = i;
+                if ($(apiElem[i]).find('input[name="apiName"]').length > 0) {
+                    //api请求参数
+                    apiPms.apiName = $(apiElem[i]).find('input[name="apiName"]').val();
+                    apiPms.type = $(apiElem[i]).find('input[name="type"]').val();
+                    apiPms.method = $(apiElem[i]).find('select[name="requestMethod"]').val();
+                    apiPms.timeout = $(apiElem[i]).find('input[name="requestTimeout"]').val();
+                    apiPms.url = $(apiElem[i]).find('textarea[name="desc"]').val();
+                    //设置header
+                    var headerList = [];
+                    var headerElem = $(apiElem[i]).find('table[name="header_table"] tr');
+                    for (var k = 0; k < headerElem.length; k++) {
+                        var header = {};
+                        var name = $(headerElem[k]).find('input[name="headerName"]').val();
+                        if (name == '' || name == 'undefined' || typeof name == 'undefined') {
+                            continue;
+                        }
+                        header.name = name;
+                        var headvue = $(headerElem[k]).find('input[name="headerValue"]').val();
+                        header.value = typeof headvue == 'undefined' ? '' : headvue;
+                        headerList[k] = header;
+                    }
+                    apiPms.headerList = headerList;
+                    //设置出参
+                    var outParamsList = [];
+                    var outParamsElem = $(apiElem[i]).find('table[name="outpms_table"] tr');
+                    for (var k = 0; k < outParamsElem.length; k++) {
+                        var outParams = {};
+                        var name = $(outParamsElem[k]).find('input[name="outName"]').val();
+                        if (typeof name == 'undefined') {
+                            continue;
+                        }
+                        outParams.name = name;
+                        outParams.source = $(outParamsElem[k]).find('select[name="outSource"]').val();
+                        outParams.resolveExpress = $(outParamsElem[k]).find('input[name="outResolveExpress"]').val();
+                        outParams.index = $(outParamsElem[k]).find('input[name="outIndex"]').val();
+                        outParamsList[k] = outParams;
+                    }
+                    apiPms.outParamsList = outParamsList;
+                    //设置断言
+                    var assertionList = [];
+                    var assertionElem = $(apiElem[i]).find('table[name="assertion_table"] tr');
+                    for (var k = 0; k < assertionElem.length; k++) {
+                        var assertion = {};
+                        var type = $(assertionElem[k]).find('select[name="assertionType"]').val();
+                        if (typeof type == 'undefined') {
+                            continue;
+                        }
+                        var name = $(assertionElem[k]).find('input[name="assertionName"]').val();
+                        if (typeof name == "undefined") {
+                            continue;
+                        }
+                        var factor = $(assertionElem[k]).find('select[name="assertionFactor"]').val();
+                        if (typeof factor == "undefined") {
+                            continue;
+                        }
+                        var content = $(assertionElem[k]).find('select[name="assertionContent"]').val();
+                        assertion.type = type;
+                        assertion.name = name;
+                        assertion.factor = factor;
+                        assertion.content = typeof content == 'undefined' ? '' : content;
+                        assertionList[k] = assertion;
+                    }
+                    apiPms.assertionList = assertionList;
+                } else {
+                    //集合点
+                    apiPms.apiName = '集合点';
+                    apiPms.type = 2;
+                    apiPms.method = 'none';
+                    apiPms.url = 'none';
+                    apiPms.waitTime = $(apiElem[i]).find('input[name="waitTime"]').val();
+                    apiPms.waitVuserNum = $(apiElem[i]).find('input[name="waitVuserNum"]').val();
+                }
+                requestPmsList[i] = apiPms;
+            }
+            scenes.requestPmsList = requestPmsList;
+            console.log(scenes);
+            return false;
+        });
     });
 </script>

@@ -386,12 +386,12 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                     $other = $(this).parent().next().find('button');
                     $div.find('input[type="text"][name="waitTime"]').parent().parent().show();
                     $div.find('input[type="text"][name="waitVuserNum"]').parent().parent().hide();
-                    $div.find('input[type="text"][name="waitVuserNum"]').val("");
+                    $div.find('input[type="text"][name="waitVuserNum"]').val("0");
                 } else if (val == '1') {
                     $other = $(this).parent().prev().find('button');
                     $div.find('input[type="text"][name="waitTime"]').parent().parent().hide();
                     $div.find('input[type="text"][name="waitVuserNum"]').parent().parent().show();
-                    $div.find('input[type="text"][name="waitTime"]').val("");
+                    $div.find('input[type="text"][name="waitTime"]').val("0");
                 }
                 $(this).removeClass('layui-btn-primary');
                 $(this).removeClass('layui-btn-normal');

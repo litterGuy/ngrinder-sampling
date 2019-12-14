@@ -54,6 +54,19 @@ func (h *HomeController) ScenesCreate() {
 	h.TplName = "scenes_create.html"
 }
 
+// @router /scenesModify	[get]
+func (h *HomeController) ScenesModify() {
+	config := getAgentConfig(h.userId)
+	id, err := h.GetInt64("id")
+	if err != nil {
+		h.Data["errMsg"] = err.Error()
+		h.Redirect("500.html", 500)
+	}
+	h.Data["id"] = id
+	h.Data["agentConfig"] = config
+	h.TplName = "scenes_create.html"
+}
+
 // @router	/preview	[get]
 func (h *HomeController) Preview() {
 	h.TplName = "preview.html"

@@ -90,6 +90,15 @@ func init() {
 
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
         beego.ControllerComments{
+            Method: "ScenesModify",
+            Router: `/scenesModify`,
+            AllowHTTPMethods: []string{"get"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:HomeController"],
+        beego.ControllerComments{
             Method: "UploadDataFile",
             Router: `/uploadDataFile`,
             AllowHTTPMethods: []string{"post"},

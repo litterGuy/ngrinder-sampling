@@ -21,7 +21,7 @@
                 <div class="layui-input-inline">
                     <input name="name" type="text" required lay-verify="required" class="layui-input" value=""
                            placeholder="请输入场景名称" autocomplete="off"/>
-                    <input name="id" type="hidden" value=""/>
+                    <input name="id" type="hidden" value="{{.id}}"/>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@
                             <label class="layui-form-label" style="width: 120px;">显示高级配置</label>
                             <div class="layui-input-inline">
                                 <input type="checkbox" lay-skin="switch" lay-text="ON|OFF"
-                                       lay-filter="advancedFilter">
+                                       lay-filter="advancedFilter" name="advancedSwitch">
                             </div>
                         </div>
 
@@ -257,7 +257,7 @@
 
         //一些事件监听
         element.on('tab(scenesFilters)', function (data) {
-            console.log(data);
+            //console.log(data);
         });
 
         var tableSelect = layui.tableSelect;
@@ -338,9 +338,12 @@
         });
         form.on('switch(useRampUpSwitchFilter)', function () {
             $("input[name='useRampUp']").val(this.checked ? 'T' : 'F');
-        })
+        });
+
+        {{if not .id}}
         var apiTemplate = layui.apiTemplate;
         apiTemplate.APITemplate($('#api_template'));
+        {{end}}
 
         //监听提交
         form.on('submit(formScenesSaveFilter)', function (data) {
@@ -373,7 +376,7 @@
             for (var i = 0; i < apiElem.length; i++) {
                 var apiPms = {};
                 apiPms.testPmsId = scenes.id;
-                apiPms.sort = i+'';
+                apiPms.sort = i + '';
                 if ($(apiElem[i]).find('input[name="apiName"]').length > 0) {
                     //api请求参数
                     apiPms.apiName = $(apiElem[i]).find('input[name="apiName"]').val();
@@ -480,18 +483,24 @@
                 requestPmsList[i] = apiPms;
             }
             scenes.requestPmsList = requestPmsList;
+            var ajaxUrl;
+            {{if .id}}
+            ajaxUrl= '/v1/scenes/create';
+            {{else}}
+            ajaxUrl= '/v1/scenes/update';
+            {{end}}
             //发送请求
             $.ajax({
-                url: '/v1/scenes/create',
+                url: ajaxUrl,
                 type: 'POST',
                 datType: 'JSON',
                 contentType: 'application/json',
                 data: JSON.stringify(scenes),
                 async: false,
                 success: function (result) {
-                    if(result.code == 1){
+                    if (result.code == 1) {
                         layer.msg(result.errMsg);
-                    }else{
+                    } else {
                         var loading = layer.load(0, {shade: false, time: 2 * 1000});
                         $('.layui-this').removeClass("layui-this");
                         layuimini.initPageTitle("/v1/home/scenesList", "压测场景");
@@ -505,3 +514,6 @@
         });
     });
 </script>
+{{if .id}}
+    <script src="/static/js/scenes_reload_data.js"></script>
+{{end}}

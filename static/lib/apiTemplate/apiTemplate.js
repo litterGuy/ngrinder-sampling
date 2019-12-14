@@ -280,8 +280,12 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 + '	</div>'
                 + '</li>';
 
-            var $li = elem.closest('li');
-            $li.after(api);
+            if (elem.is('ul')) {
+                elem.append(api);
+            } else if (elem.is('button')) {
+                var $li = elem.closest('li');
+                $li.after(api);
+            }
             layui.form.render();
             apiTemplate.APITemplateBind();
             layer.msg('添加成功', {time: 700});
@@ -616,7 +620,7 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
                 for (var k = 0; k < paramEle.length; k++) {
                     var param = {};
                     param.name = $(paramEle[k]).val();
-                    param.value = k;
+                    param.value = k+'';
                     paramsList[k] = param;
                 }
                 fileData.paramsList = paramsList;

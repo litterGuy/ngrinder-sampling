@@ -249,12 +249,14 @@ func BuildScenesBean(pms *TestPms, requestPmsList *[]RequestPms) (*SencesRequest
 		return nil, err
 	}
 	//转成fileDataList
-	var fileDataList []SencesFileData
-	err := json.Unmarshal([]byte(pms.FileData), &fileDataList)
-	if err != nil {
-		return nil, err
+	if len(pms.FileData)>0{
+		var fileDataList []SencesFileData
+		err := json.Unmarshal([]byte(pms.FileData), &fileDataList)
+		if err != nil {
+			return nil, err
+		}
+		sencesRequestBean.FileDataList = fileDataList
 	}
-	sencesRequestBean.FileDataList = fileDataList
 
 	if IsNil(requestPmsList) || len(*requestPmsList) <= 0 {
 		return &sencesRequestBean, nil

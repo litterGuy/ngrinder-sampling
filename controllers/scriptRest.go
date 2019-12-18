@@ -49,7 +49,6 @@ func (s *ScriptController) Create() {
 	}
 	scheduledTimeStr := s.GetString("scheduledTime")
 	if len(scheduledTimeStr) > 0 {
-
 		loc, _ := time.LoadLocation("Local")
 		scheduledTime, err := time.ParseInLocation("2006-01-02 15:04:05", scheduledTimeStr, loc)
 		if err != nil {
@@ -57,6 +56,8 @@ func (s *ScriptController) Create() {
 		} else {
 			sencesRequestBean.ScheduledTime = scheduledTime.Format("2006-01-02 15:04:05")
 		}
+	} else {
+		sencesRequestBean.ScheduledTime = time.Now().Format("2006-01-02 15:04:05")
 	}
 	//请求ngrinder，生成压测脚本和测试数据
 	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")

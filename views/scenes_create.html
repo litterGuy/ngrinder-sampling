@@ -3,17 +3,20 @@
         <form class="layui-form">
             <blockquote class="layui-elem-quote">
                 创建压测
-                <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;">保存去压测
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;" id="scenes_test_btn">保存去压测
                 </button>
-                <button type="button" class="layui-btn layui-btn-sm" style="float: right;" lay-submit
+                <input type="hidden" name="reserveTime"/>
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right; margin-left: 10px;" lay-submit
                         lay-filter="formScenesValidFilter">调试场景
                 </button>
                 <button type="button" class="layui-btn layui-btn-sm" id="btn_scenes_save" lay-submit
-                        lay-filter="formScenesSaveFilter" style="float: right;">保存配置
+                        lay-filter="formScenesSaveFilter" style="float: right; margin-left: 10px;">保存配置
                 </button>
                 <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-file-upload="数据源管理"
                         style="float: right;">数据源管理
                 </button>
+                <button type="button" class="layui-btn layui-btn-sm layui-hide" id="scenes_hidden_test_btn" lay-submit
+                        lay-filter="formScenesRunFilter">隐藏btn，用于提交form</button>
                 <input type="hidden" id="scenes_datafile_json" value=""/>
             </blockquote>
 
@@ -252,7 +255,7 @@
     //转化成js函数，目前不起作用
     {{.agentConfig.vuserCalcScript}}
 
-    layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate'], function () {
+    layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate','laydate'], function () {
         var $ = layui.jquery,
             element = layui.element,
             form = layui.form;
@@ -437,12 +440,16 @@
                     for (var k = 0; k < outParamsElem.length; k++) {
                         var outParams = {};
                         var name = $(outParamsElem[k]).find('input[name="outName"]').val();
-                        if (typeof name == 'undefined') {
+                        if (typeof name == 'undefined' || name =='undefined' || name == '') {
+                            continue;
+                        }
+                        var resolveExpress = $(outParamsElem[k]).find('input[name="outResolveExpress"]').val();
+                        if (typeof resolveExpress == 'undefined' || resolveExpress =='undefined' || resolveExpress == '') {
                             continue;
                         }
                         outParams.name = name;
                         outParams.source = $(outParamsElem[k]).find('select[name="outSource"]').val();
-                        outParams.resolveExpress = $(outParamsElem[k]).find('input[name="outResolveExpress"]').val();
+                        outParams.resolveExpress = resolveExpress;
                         outParams.index = $(outParamsElem[k]).find('input[name="outIndex"]').val();
                         outParamsList[outParamsIdx++] = outParams;
                     }
@@ -454,15 +461,15 @@
                     for (var k = 0; k < assertionElem.length; k++) {
                         var assertion = {};
                         var type = $(assertionElem[k]).find('select[name="assertionType"]').val();
-                        if (typeof type == 'undefined') {
+                        if (typeof type == 'undefined' || type =='undefined' || type == '') {
                             continue;
                         }
                         var name = $(assertionElem[k]).find('input[name="assertionName"]').val();
-                        if (typeof name == "undefined") {
+                        if (typeof name == "undefined" || name =='undefined' || name == '') {
                             continue;
                         }
                         var factor = $(assertionElem[k]).find('select[name="assertionFactor"]').val();
-                        if (typeof factor == "undefined") {
+                        if (typeof factor == "undefined" || factor =='undefined' || factor == '') {
                             continue;
                         }
                         var content = $(assertionElem[k]).find('input[name="assertionContent"]').val();
@@ -550,8 +557,89 @@
             return false;
         });
 
+        //弹出时间选择框
+        $('#scenes_test_btn').click(function () {
+            layer.open({
+                title:'预约设置',
+                type: 1,
+                area: ['420px', '240px'], //宽高
+                content: '<div style="margin: 20px;line-height: 20px;"><label>预约</label><div class="layui-inline" style="margin-left: 70px;">' +
+                    '<input type="text" class="layui-input" id="reserve_time" readonly>' +
+                    '</div>' +
+                     '<div class="layui-inline" style="margin: 75px 0 0 190px;">' +
+                    '<button type="button" class="layui-btn layui-btn-primary" id="runNowBtn">马上运行</button>' +
+                    '<button type="button" class="layui-btn layui-btn-primary" id="reserveBtn">预约</button></div>'
+                    +'</div>'
+            });
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                type:'datetime',
+                value:new Date(),
+                isInitValue: false,
+                elem: '#reserve_time' //指定元素
+            });
+            $('#reserveBtn').off('click').on('click',function () {
+                var reserve_time = $('#reserve_time').val();
+                if(typeof reserve_time == 'undefined' || reserve_time == ''){
+                    layer.alert('请设置预约时间', {
+                        skin: 'layui-layer-lan'
+                        ,closeBtn: 0
+                        ,anim: 4 //动画类型
+                    });
+                    return;
+                }
+                $('input[name="reserveTime"]').val(reserve_time);
+                $('#scenes_hidden_test_btn').trigger('click');
+            });
+            $('#runNowBtn').click(function () {
+                $('#scenes_hidden_test_btn').trigger('click');
+            });
+        });
+
+        //运行
+        form.on('submit(formScenesRunFilter)', function (data) {
+            var scenes = getScenesFormData(data);
+            scenes.scheduledTime = $('input[name="reserveTime"]').val();
+            var ajaxUrl;
+            {{if .id}}
+            ajaxUrl = '/v1/scenes/update';
+            {{else}}
+            ajaxUrl = '/v1/scenes/create';
+            {{end}}
+            //发送请求
+            $.ajax({
+                url: ajaxUrl,
+                type: 'POST',
+                datType: 'JSON',
+                contentType: 'application/json',
+                data: JSON.stringify(scenes),
+                async: false,
+                success: function (result) {
+                    if (result.code == 1) {
+                        layer.alert(result.errMsg);
+                    } else {
+                        $.post('/v1/script/create',{id:result.data},function (result) {
+                            if(result.code == 1){
+                                layer.alert(result.errMsg);
+                            }else{
+                                layer.close(layer.index);
+                                var loading = layer.load(0, {shade: false, time: 2 * 1000});
+                                $('.layui-this').removeClass("layui-this");
+                                layuimini.initPageTitle("/v1/home/reportList", "压测报告");
+                                layuimini.initConten("/v1/home/reportList");
+                                layuimini.initDevice();
+                                layer.close(loading);
+                            }
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
     });
 </script>
 {{if .id}}
-    <script src="/static/js/scenes_reload_data.js"></script>
+    <script src="/static/js/scenes_reload_data.js?1"></script>
 {{end}}

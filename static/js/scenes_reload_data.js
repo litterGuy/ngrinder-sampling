@@ -7,7 +7,6 @@ layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate', 'jquery', '
 
     var id = $('input[name="id"]').val();
     $.get('/v1/scenes/getScenesById?id=' + id, function (data) {
-        console.log(data);
         if (data.code == 1) {
             layer.msg_error(data.errMsg);
             var loading = layer.load(0, {shade: false, time: 2 * 1000});
@@ -18,7 +17,7 @@ layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate', 'jquery', '
         } else {
             var scenes = data.data;
             var fileDataList = scenes.fileDataList;
-            if (fileDataList.length > 0) {
+            if (typeof fileDataList !='undefined' && fileDataList.length > 0) {
                 $('#scenes_datafile_json').val(JSON.stringify(fileDataList));
             }
             $('input[name="name"]').val(scenes.name);

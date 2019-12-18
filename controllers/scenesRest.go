@@ -253,6 +253,7 @@ func (s *ScenesController) Update() {
 	}
 	o.Commit()
 
+	s.result.Data = sencesRequestBean.Id
 	s.responseAjax()
 }
 

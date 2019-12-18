@@ -187,6 +187,15 @@ func init() {
             Filters: nil,
             Params: nil})
 
+    beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScenesController"],
+        beego.ControllerComments{
+            Method: "Valid",
+            Router: `/valid`,
+            AllowHTTPMethods: []string{"post"},
+            MethodParams: param.Make(),
+            Filters: nil,
+            Params: nil})
+
     beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScriptController"] = append(beego.GlobalControllerRouter["ngrinder-sampling/controllers:ScriptController"],
         beego.ControllerComments{
             Method: "Create",

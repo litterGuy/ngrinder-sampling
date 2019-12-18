@@ -5,7 +5,9 @@
                 创建压测
                 <button type="button" class="layui-btn layui-btn-sm" style="float: right;margin-left: 10px;">保存去压测
                 </button>
-                <button type="button" class="layui-btn layui-btn-sm" style="float: right;">调试场景</button>
+                <button type="button" class="layui-btn layui-btn-sm" style="float: right;" lay-submit
+                        lay-filter="formScenesValidFilter">调试场景
+                </button>
                 <button type="button" class="layui-btn layui-btn-sm" id="btn_scenes_save" lay-submit
                         lay-filter="formScenesSaveFilter" style="float: right;">保存配置
                 </button>
@@ -345,12 +347,12 @@
         apiTemplate.APITemplate($('#api_template'));
         {{end}}
 
-        //监听提交
-        form.on('submit(formScenesSaveFilter)', function (data) {
+        function getScenesFormData(data) {
             var sdata = data.field;
             //组装参数，发送请求
             var scenes = {};
-            scenes.id = sdata.id == '' ? '0' : sdata.id;
+            var id = $('input[name="id"]').val();
+            scenes.id = typeof id == 'undefined' || id == '' ? '0' : id;
             scenes.name = sdata.name;
             scenes.ignoreSampleCount = sdata.ignoreSampleCount;
             scenes.targetHosts = sdata.targetHosts;
@@ -483,11 +485,17 @@
                 requestPmsList[i] = apiPms;
             }
             scenes.requestPmsList = requestPmsList;
+            return scenes;
+        }
+
+        //监听提交
+        form.on('submit(formScenesSaveFilter)', function (data) {
+            var scenes = getScenesFormData(data);
             var ajaxUrl;
             {{if .id}}
-            ajaxUrl= '/v1/scenes/create';
+            ajaxUrl = '/v1/scenes/update';
             {{else}}
-            ajaxUrl= '/v1/scenes/update';
+            ajaxUrl = '/v1/scenes/create';
             {{end}}
             //发送请求
             $.ajax({
@@ -512,6 +520,36 @@
             });
             return false;
         });
+
+        //监听调试场景
+        form.on('submit(formScenesValidFilter)', function (data) {
+            var loading = layer.load(1, {shade: [0.5,'#000']});
+            var scenes = getScenesFormData(data);
+            var ajaxUrl = '/v1/scenes/valid';
+            //发送请求
+            $.ajax({
+                url: ajaxUrl,
+                type: 'POST',
+                datType: 'JSON',
+                contentType: 'application/json',
+                data: JSON.stringify(scenes),
+                async: false,
+                success: function (result) {
+                    if (result.code == 1) {
+                        layer.msg(result.errMsg);
+                    } else {
+                        layer.open({
+                            type: 1,
+                            area: ['810px', '400px'], //宽高
+                            content: '<div style="margin: 20px;line-height: 20px;">'+result.data+'</div>'
+                        });
+                    }
+                    layer.close(loading);
+                }
+            });
+            return false;
+        });
+
     });
 </script>
 {{if .id}}

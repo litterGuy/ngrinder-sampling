@@ -65,6 +65,45 @@ func (s *ScenesController) GetScenesById() {
 	s.responseAjax()
 }
 
+// @router	/valid	[post]
+func (s *ScenesController) Valid() {
+	var sencesRequestBean models.SencesRequestBean
+	data := s.Ctx.Input.RequestBody
+	//json数据封装到user对象中
+	err := json.Unmarshal(data, &sencesRequestBean)
+	if err != nil {
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
+	}
+
+	//对参数完整性进行校验
+	if err := models.ValidSencesParams(&sencesRequestBean); err != nil {
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+		s.responseAjax()
+	}
+	if len(sencesRequestBean.UserId) <= 0 {
+		sencesRequestBean.UserId = s.userId
+	}
+	//随意设置定时时间
+	sencesRequestBean.ScheduledTime = time.Now().Format("2006-01-02 15:04:05")
+
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.validScript")
+	req := httplib.Post(ngrinderUrl + apiUrl)
+	req.Header("Content-Type", "application/json")
+	req.JSONBody(sencesRequestBean)
+	rst, err := req.String()
+	if err != nil {
+		s.result.Code = 1
+		s.result.ErrMsg = err.Error()
+	} else {
+		s.result.Data = rst
+	}
+	s.responseAjax()
+}
+
 // @router /create	[post]
 func (s *ScenesController) Create() {
 	var sencesRequestBean models.SencesRequestBean
@@ -156,6 +195,13 @@ func (s *ScenesController) Update() {
 	if len(sencesRequestBean.UserId) <= 0 {
 		sencesRequestBean.UserId = s.userId
 	}
+	//确认id是否存在
+	originTestPms, err := models.TestPmsGetById(sencesRequestBean.Id)
+	if err != nil {
+		s.result.Code = 1
+		s.result.ErrMsg = "the scenes of id " + strconv.FormatInt(sencesRequestBean.Id, 10) + " not exist"
+		s.responseAjax()
+	}
 	//开启事务
 	o := orm.NewOrm()
 	//获取testPms
@@ -166,6 +212,7 @@ func (s *ScenesController) Update() {
 		s.responseAjax()
 	}
 	testPms.UpdateTime = time.Now()
+	testPms.CreateTime = originTestPms.CreateTime
 
 	o.Begin()
 	dbErr := models.TestPmsUpdate(testPms, o)

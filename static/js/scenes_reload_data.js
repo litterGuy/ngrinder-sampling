@@ -52,7 +52,7 @@ layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate', 'jquery', '
             if (typeof scenes.samplingInterval != 'undefined') {
                 $('select[name="samplingInterval"]').each(function () {
                     if (this.value == scenes.samplingInterval) {
-                        $(this).val("selected", true);
+                        $(this).attr("selected", true);
                     }
                 });
             }

@@ -109,6 +109,12 @@
                     }
                     $div.text(rst);
                 });
+
+                $('td[data-field="startTime"]').each(function () {
+                    var $div = $(this).find('div[class^="layui-table-cell"]');
+                    var val = $div.text();
+                    $div.text(new Date(val).Format("yyyy-MM-dd hh:mm:ss"));
+                });
             }
         });
 

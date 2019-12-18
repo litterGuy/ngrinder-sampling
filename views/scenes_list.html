@@ -52,7 +52,14 @@
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 10,
-            page: true
+            page: true,
+            done:function () {
+                $('td[data-field="UpdateTime"]').each(function () {
+                    var $div = $(this).find('div[class^="layui-table-cell"]');
+                    var val = $div.text();
+                    $div.text(new Date(val).Format("yyyy-MM-dd hh:mm:ss"));
+                });
+            }
         });
 
         // 监听搜索操作

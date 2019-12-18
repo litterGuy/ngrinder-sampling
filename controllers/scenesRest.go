@@ -137,6 +137,12 @@ func (s *ScenesController) Create() {
 	}
 	testPms.CreateTime = time.Now()
 	testPms.UpdateTime = testPms.CreateTime
+	//运行方式
+	if testPms.Threshold == "R"{
+		testPms.Duration = 0
+	}else if testPms.Threshold == "D" {
+		testPms.RunCount = 0
+	}
 
 	o.Begin()
 	id, dbErr := models.TestPmsSave(testPms, o)
@@ -211,6 +217,12 @@ func (s *ScenesController) Update() {
 		s.result.ErrMsg = err.Error()
 		s.responseAjax()
 	}
+	if testPms.Threshold == "R"{
+		testPms.Duration = 0
+	}else if testPms.Threshold == "D" {
+		testPms.RunCount = 0
+	}
+
 	testPms.UpdateTime = time.Now()
 	testPms.CreateTime = originTestPms.CreateTime
 

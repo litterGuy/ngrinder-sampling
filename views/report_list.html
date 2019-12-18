@@ -68,7 +68,48 @@
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 10,
-            page: true
+            page: true,
+            done: function () {
+                $('td[data-field="status"]').each(function (index,element) {
+                    var $div = $(this).find('div[class^="layui-table-cell"]');
+                    var val = $div.text();
+                    var rst;
+                    switch (val) {
+                        case 'SAVED':
+                        case 'READY':
+                            rst = '准备';
+                            break;
+                        case 'START_CONSOLE':
+                        case 'START_CONSOLE_FINISHED':
+                        case 'START_AGENTS':
+                        case 'START_AGENTS_FINISHED':
+                        case 'DISTRIBUTE_FILES':
+                        case 'DISTRIBUTE_FILES_FINISHED':
+                            rst = '开启线程';
+                            break;
+                        case 'FINISHED':
+                            rst = '完成';
+                            break;
+                        case 'START_TESTING':
+                        case 'TESTING':
+                        case 'TESTING_FINISHED':
+                        case 'ABNORMAL_TESTING':
+                            rst = '测试中';
+                            break;
+                        case 'STOP_BY_ERROR':
+                        case 'STOP_ON_ERROR':
+                            rst = '异常';
+                            break;
+                        case 'CANCELED':
+                        case 'UNKNOWN':
+                            rst = '停止';
+                            break;
+                        default:
+                            rst = val;
+                    }
+                    $div.text(rst);
+                });
+            }
         });
 
         // 监听搜索操作
@@ -117,11 +158,11 @@
                 var width = $('.layui-body').width() - 220;
                 layer.open({
                     type: 2,
-                    area: [width+'px', '550px'],
+                    area: [width + 'px', '550px'],
                     offset: 'auto',
                     fixed: true,
                     maxmin: true,
-                    content: '/v1/home/samplingLog?pftestId='+data.id
+                    content: '/v1/home/samplingLog?pftestId=' + data.id
                 });
             } else if (obj.event === 'delete') {
                 layer.confirm('真的删除行么', function (index) {

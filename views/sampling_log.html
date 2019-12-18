@@ -43,9 +43,130 @@
         });
 
         table.on('tool(currentTableFilter)', function (obj) {
-            var data = obj.data;
-            layer.alert(data.ReqContent)
+            var data = JSON.parse(obj.data.ReqContent);
+            var html = '<table class="layui-table" lay-skin="line">'
+                + '<colgroup>' +
+                '    <col width="150">' +
+                '    <col>' +
+                '  </colgroup>' +
+                '  <thead>' +
+                '    <tr>' +
+                '      <th>General</th>' +
+                '      <th></th>' +
+                '    </tr>' +
+                '  </thead>'
+                + '<tbody>' +
+                '    <tr>' +
+                '      <td>Request URL</td>' +
+                '      <td>' + data.http_req_url + '</td>' +
+                '    </tr>' +
+                '    <tr>' +
+                '      <td>Request Method</td>' +
+                '      <td>' + data.http_req_method + '</td>' +
+                '    </tr>' +
+                '    <tr>' +
+                '      <td>Response Code</td>' +
+                '      <td>' + data.http_res_status + '</td>' +
+                '    </tr>' +
+                '    <tr>' +
+                '      <td>Export Conten</td>' +
+                '      <td>' + JSON.stringify(data.export_content) + '</td>' +
+                '    </tr>' +
+                '    <tr>' +
+                '      <td>Check Result</td>' +
+                '      <td>' + JSON.stringify(data.check_result) + '</td>' +
+                '    </tr>' +
+                '  </tbody>'
+                + '</table>';
+
+            html += '<table class="layui-table" lay-skin="line">'
+                + '	<colgroup> '
+                + '		<col width="150"> '
+                + '		<col> '
+                + '	</colgroup> '
+                + '	<thead> '
+                + '		<tr> '
+                + '		  <th>Request Headers</th> '
+                + '		  <th></th> '
+                + '		</tr> '
+                + '	</thead>'
+                + ' <tbody> ';
+            if (typeof data.http_req_headers != 'undefined') {
+                for (var i =0; i < data.http_req_headers.length; i++) {
+                    var header = data.http_req_headers[i];
+                    html += '    <tr> '
+                        +'      <td>'+header.name+'</td> '
+                        +'      <td>'+header.value+'</td> '
+                        +'    </tr> ';
+                }
+            }
+            html += '  </tbody>'
+                +'</table>';
+
+            html += '<table class="layui-table" lay-skin="line">'
+                + '	<colgroup> '
+                + '		<col> '
+                + '	</colgroup> '
+                + '	<thead> '
+                + '		<tr> '
+                + '		  <th>Request Body</th> '
+                + '		</tr> '
+                + '	</thead>'
+                + ' <tbody> ';
+            html += '    <tr> '
+                +'      <td>'+data.http_req_body+'</td> '
+                +'    </tr> ';
+            html += '  </tbody>'
+                +'</table>';
+
+            html += '<table class="layui-table" lay-skin="line">'
+                + '	<colgroup> '
+                + '		<col width="180"> '
+                + '		<col> '
+                + '	</colgroup> '
+                + '	<thead> '
+                + '		<tr> '
+                + '		  <th>Response Headers</th> '
+                + '		  <th></th> '
+                + '		</tr> '
+                + '	</thead>'
+                + ' <tbody> ';
+            if (typeof data.http_res_headers != 'undefined') {
+                var respHeaders = data.http_res_headers;
+                for(var key in respHeaders){
+                    html += '    <tr> '
+                        +'      <td>'+key+'</td> '
+                        +'      <td>'+respHeaders[key]+'</td> '
+                        +'    </tr> ';
+                }
+            }
+            html += '  </tbody>'
+                +'</table>';
+
+            html += '<table class="layui-table" lay-skin="line">'
+                + '	<colgroup> '
+                + '		<col> '
+                + '	</colgroup> '
+                + '	<thead> '
+                + '		<tr> '
+                + '		  <th>Response Body</th> '
+                + '		</tr> '
+                + '	</thead>'
+                + ' <tbody> ';
+            html += '    <tr> '
+                +'      <td>'+htmlEncode(data.http_res_body)+'</td> '
+                +'    </tr> ';
+            html += '  </tbody>'
+                +'</table>';
+            layer.open({
+                area: ['900px', '400px'],
+                content: html
+            });
         });
 
+        function htmlEncode(value){
+            return $('<div/>').text(value).html();
+        }
     });
+
 </script>

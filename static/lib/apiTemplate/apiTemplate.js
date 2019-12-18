@@ -375,9 +375,12 @@ layui.define(['jquery', 'form', 'layer', 'upload'], function (exports) {
             //清除单元内数据
             function clearData(event) {
                 event.find('input').val('');
-                event.find('select').val('');
+                event.find('select').each(function () {
+                    $(this).find('option:eq(0)').attr('selected',true);
+                });
                 event.find('checkbox').attr('checked', '');
                 event.find('radio').attr('checked', '');
+                layui.form.render();
             }
 
             //radio绑定事件

@@ -54,15 +54,20 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'id', width: 60, title: '测试Id'},
-                {field: 'status', width: 120, title: '状态'},
-                {field: 'testName', width: 220, title: '测试名称'},
+                {field: 'status', width: 75, title: '状态'},
+                {field: 'testName', width: 300, title: '测试名称'},
                 {field: 'scriptName', width: 200, title: '脚本文件名'},
-                {field: 'startTime', width: 185, title: '开始时间'},
-                {field: 'runCount', width: 120, title: '持续阈值-次数'},
-                {field: 'duration', width: 120, title: '持续阈值-时间'},
+                {field: 'startTime', width: 160, title: '开始时间'},
+                {field: 'runcount', width: 95, title: '持续阈值',templet:function (d) {
+                        if(d.runCount>0){
+                            return d.runCount+'次';
+                        }else{
+                            return d.duration+'S';
+                        }
+                    }},
                 {field: 'tps', width: 80, title: 'TPS'},
                 {field: 'meanTestTime', width: 100, title: 'MTT'},
-                {field: 'errors', width: 70, title: '出错率'},
+                {field: 'errors', width: 80, title: '出错率'},
                 {field: 'vuserPerAgent', width: 80, title: 'Vusers'},
                 {title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]],

@@ -43,10 +43,15 @@
             cols: [[
                 {type: "checkbox", width: 50, fixed: "left"},
                 {field: 'Id', width: 80, title: '场景Id'},
-                {field: 'Name', width: 300, title: '场景名'},
+                {field: 'Name', width: 640, title: '场景名'},
                 {field: 'VuserPerAgent', width: 100, title: '虚拟用户数'},
-                {field: 'RunCount', width: 120, title: '持续阈值-次数'},
-                {field: 'Duration', width: 120, title: '持续阈值-时间'},
+                {field: 'RunCount', width: 120, title: '持续阈值',templet:function (d) {
+                        if(d.RunCount>0){
+                            return d.RunCount+'次';
+                        }else{
+                            return d.Duration+'S';
+                        }
+                    }},
                 {field: 'UpdateTime', title: '最后修改时间', minWidth: 150},
                 {title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
             ]],

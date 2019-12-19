@@ -60,7 +60,7 @@ func (h *HomeController) ScenesModify() {
 	id, err := h.GetInt64("id")
 	if err != nil {
 		h.Data["errMsg"] = err.Error()
-		h.Redirect("500.html", 500)
+		h.Redirect("404.html", 500)
 	}
 	h.Data["id"] = id
 	h.Data["agentConfig"] = config
@@ -69,6 +69,25 @@ func (h *HomeController) ScenesModify() {
 
 // @router	/preview	[get]
 func (h *HomeController) Preview() {
+	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
+	apiUrl := beego.AppConfig.String("ngrinder.api.announcement")
+	ngrinderUrl += apiUrl
+	req := httplib.Get(ngrinderUrl)
+	var js NsResponseBean
+	rst, err := req.String()
+	if err != nil {
+		h.Data["errMsg"] = err.Error()
+		h.Redirect("404.html", 500)
+		h.StopRun()
+	} else {
+		err = json.Unmarshal([]byte(rst), &js)
+		if err != nil {
+			h.Data["errMsg"] = rst
+			h.Redirect("404.html", 500)
+			h.StopRun()
+		}
+	}
+	h.Data["announcement"] = js.Data
 	h.TplName = "preview.html"
 }
 

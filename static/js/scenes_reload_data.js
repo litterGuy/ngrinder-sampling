@@ -74,7 +74,7 @@ layui.use(['form', 'table', 'element', 'tableSelect', 'apiTemplate', 'jquery', '
             $('input[name="rampUpInitSleepTime"]').val(typeof scenes.rampUpInitSleepTime == 'undefined' ? '0' : scenes.rampUpInitSleepTime);
             $('input[name="rampUpIncrementInterval"]').val(typeof scenes.rampUpIncrementInterval == 'undefined' ? '0' : scenes.rampUpIncrementInterval);
 
-            $('input[name="timeOut"]').val(typeof scenes.timeOut == 'undefined' ? '0' : scenes.timeOut);
+            $('input[name="statusCode"]').val(typeof scenes.statusCode == 'undefined' ? '' : scenes.statusCode);
             $('input[name="targetHosts"]').val(scenes.targetHosts);
 
             //动态设置api部分

@@ -30,6 +30,7 @@ type TestPms struct {
 	UserId                  string
 	CreateTime              time.Time
 	UpdateTime              time.Time
+	StatusCode              string
 }
 
 func init() {

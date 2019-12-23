@@ -227,11 +227,15 @@
 
                     <div class="layui-tab-item">
                         <div class="layui-form-item">
-                            <label class="layui-form-label" style="width: 100px;">建立超时时间</label>
+                            <label class="layui-form-label" style="width: 200px;"><b>通用设置适用于全场景所有API</b></label>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="width: 100px;">新增成功状态码</label>
                             <div class="layui-input-inline">
-                                <input name="timeOut" type="text" class="layui-input" lay-verify="number" value="0"/>
+                                <input name="statusCode" type="text" class="layui-input" value="" placeholder="请使用英文逗号(,)分隔穷举输入，如301,302"/>
                             </div>
-                            <div class="layui-form-mid layui-word-aux">* 500ms</div>
+                            <div class="layui-form-mid layui-word-aux">默认只有2xx为请求成功，新增内容和2xx状态码均视为请求成功状态码。</div>
                         </div>
                     </div>
 
@@ -373,6 +377,7 @@
             scenes.threads = sdata.threads;
             scenes.samplingInterval = sdata.samplingInterval;
             scenes.param = sdata.param;
+            scenes.statusCode = sdata.statusCode;
             var datafile_tmp = $('#scenes_datafile_json').val();
             scenes.fileDataList = datafile_tmp == '' ? [] : JSON.parse(datafile_tmp);
             //收集api信息

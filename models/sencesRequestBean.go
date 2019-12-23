@@ -39,6 +39,7 @@ type SencesRequestBean struct {
 	RequestPmsList          []APIRequestParams `json:"requestPmsList,omitempty" valid:"Required"`
 	ScheduledTime           string             `json:"scheduledTime"`
 	UserId                  string             `json:"userId"`
+	StatusCode              string             `json:"statusCode"'`
 }
 
 type APIRequestParams struct {
@@ -249,7 +250,7 @@ func BuildScenesBean(pms *TestPms, requestPmsList *[]RequestPms) (*SencesRequest
 		return nil, err
 	}
 	//转成fileDataList
-	if len(pms.FileData)>0{
+	if len(pms.FileData) > 0 {
 		var fileDataList []SencesFileData
 		err := json.Unmarshal([]byte(pms.FileData), &fileDataList)
 		if err != nil {

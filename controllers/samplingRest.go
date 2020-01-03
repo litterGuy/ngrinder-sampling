@@ -79,7 +79,7 @@ func (s *SamplingController) Gather() {
 	if err != nil {
 		logs.Error(err.Error())
 	}
-	if len(*sampRestultList) <= 0 {
+	if sampRestultList == nil || len(*sampRestultList) <= 0 {
 		s.result.Code = 1
 		s.result.ErrMsg = errors.New("there is no samp result").Error()
 		s.responseAjax()

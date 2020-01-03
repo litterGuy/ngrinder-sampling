@@ -553,7 +553,7 @@
                         layer.open({
                             type: 1,
                             area: ['810px', '400px'], //宽高
-                            content: '<div style="margin: 20px;line-height: 20px;">'+result.data+'</div>'
+                            content: '<div style="margin: 20px;line-height: 20px;">'+$('<div>').html(result.data).text()+'</div>'
                         });
                     }
                     layer.close(loading);

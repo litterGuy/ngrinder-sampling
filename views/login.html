@@ -132,8 +132,17 @@
 <script>
     layui.use(['form', 'jquery','layer'], function () {
         var form = layui.form,
+            $ = layui.jquery,
             layer = layui.layer;
 
+        $.ajaxSetup({
+            beforeSend: function(){
+                layer.load();
+            },
+            complete: function(){
+                layer.close(layer.load());
+            }
+        });
         // 登录过期的时候，跳出ifram框架
         if (top.location != self.location) top.location = self.location;
 
@@ -147,7 +156,6 @@
                 layer.msg('密码不能为空');
                 return false;
             }
-            var $ = layui.jquery;
             $.post('/v1/user/login', data.field, function (rst) {
                 if (rst.code == 0) {
                     window.location.href = "/v1/home/index";

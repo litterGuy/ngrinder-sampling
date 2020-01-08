@@ -21,7 +21,7 @@ func (b *BaseController) Prepare() {
 	b.result = new(NsResponseBean)
 	controller, action := b.GetControllerAndAction()
 
-	if (controller != "UserController" || action != "Login") && action != "Gather"{
+	if (controller != "UserController" || action != "Login") && action != "Gather" && action!="DingTalk"{
 		//校验是否登录
 		userId := b.GetSession(SESSION_NAME)
 		if userId != nil {

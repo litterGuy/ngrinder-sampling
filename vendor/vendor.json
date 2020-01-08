@@ -9,6 +9,12 @@
 			"revisionTime": "2019-10-23T14:22:52Z"
 		},
 		{
+			"checksumSHA1": "rSvqVVn0tYvzyi+9LzIjbK8I9wY=",
+			"path": "github.com/astaxie/beego/cache",
+			"revision": "32ee728078c84c28f2642c70745afc8f6830044d",
+			"revisionTime": "2019-07-05T04:26:39Z"
+		},
+		{
 			"checksumSHA1": "qFmnMbrtRzi14+5scXmKq+/9xyU=",
 			"path": "github.com/astaxie/beego/config",
 			"revision": "1923b8c7677ad80e47f93fe1a0d2cd4118fa82c3",

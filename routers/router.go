@@ -7,6 +7,7 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
+	beego.Router("/dingTalk", &controllers.DingTalkOauthRest{})
 
 	ns := beego.NewNamespace("/v1",
 		beego.NSNamespace("/samp",

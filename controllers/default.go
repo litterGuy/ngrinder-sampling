@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"net/url"
+	"strconv"
 )
 
 type MainController struct {
@@ -10,6 +11,13 @@ type MainController struct {
 }
 
 func (c *MainController) Get() {
-	c.Data["goto"] = url.QueryEscape("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=ding9d9231bfd078cf0d&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=http://127.0.0.1:8090/")
+	appId := beego.AppConfig.String("dingtalk.appid")
+	redirectUrl := c.Ctx.Input.Site() + "/dingTalk"
+	port := c.Ctx.Input.Port()
+	if port != 80 && port != 443 {
+		redirectUrl = c.Ctx.Input.Site() + ":" + strconv.Itoa(port) + "/dingTalk"
+	}
+
+	c.Data["goto"] = url.QueryEscape("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=" + appId + "&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=" + redirectUrl)
 	c.TplName = "login.html"
 }

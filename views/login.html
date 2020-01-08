@@ -113,8 +113,9 @@
         <div class="admin-header">
             <span>测试云平台</span>
         </div>
-        <form class="layui-form" method="post">
-            <div id="login_container"></div>
+        <div id="login_container" style="width: 300px;height: 300px;"></div>
+
+        <form class="layui-form layui-hide" method="post" id="login_form">
             <div>
                 <i class="layui-icon layui-icon-username admin-icon"></i>
                 <input type="text" name="userId" placeholder="请输入用户名" autocomplete="off"
@@ -127,19 +128,21 @@
             </div>
             <input class="layui-btn admin-button" lay-submit="" lay-filter="login" type="submit" value="登 陆"/>
         </form>
+
+        <div style="float: right;margin-top: 30px;"><button type="button" class="layui-btn" id="switchBtn">账号登陆</button></div>
+
     </div>
 </div>
 <script src="/static/lib/layui/layui.js" charset="utf-8"></script>
 <!-- 引入钉钉登陆 -->
-<script src="https://g.alicdn.com/dingding/dinglogin/0.0.2/ddLogin.js"></script>
+<script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
 <script>
     var obj = DDLogin({
-        id: "login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+        id: "login_container",
         goto: "{{.goto}}",
         style: "",
-        href: "",
-        width: "300px",
-        height: "300px"
+        width: "300",
+        height: "300"
     });
     var hanndleMessage = function (event) {
         var origin = event.origin;
@@ -169,6 +172,19 @@
                 layer.close(layer.load());
             }
         });
+
+        $('#switchBtn').click(function(){
+            if($('#login_container').hasClass('layui-hide')){
+                $('#login_form').addClass('layui-hide');
+                $('#login_container').removeClass('layui-hide');
+                $('#switchBtn').text('账号登陆');
+            }else{
+                $('#login_form').removeClass('layui-hide');
+                $('#login_container').addClass('layui-hide');
+                $('#switchBtn').text('钉钉登陆');
+            }
+        });
+
         // 登录过期的时候，跳出ifram框架
         if (top.location != self.location) top.location = self.location;
 

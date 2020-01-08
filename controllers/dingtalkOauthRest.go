@@ -16,7 +16,6 @@ type NUser struct {
 	UserName string `json:"userName"`
 }
 
-// @router /dingTalk	[get]
 func (d *DingTalkOauthRest) DingTalk() {
 	code := d.GetString("code")
 	if len(code) <= 0 {

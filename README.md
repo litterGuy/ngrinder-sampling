@@ -57,6 +57,7 @@
     3.  上传到代理机器，解压 执行run_agent_bg.sh
    
    ![下载代理][3] 
+   
 四. monitor
     
     1. 下载监控ngrinder-monitor-3.4.3.tar

@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	SESSION_NAME = "user_login_id"
-	PAGESIZE     = 10
+	SESSION_USER_ID   = "user_login_id"
+	SESSION_USER_NICK = "user_login_nick"
+	PAGESIZE          = 10
 )
 
 type BaseController struct {
@@ -21,9 +22,9 @@ func (b *BaseController) Prepare() {
 	b.result = new(NsResponseBean)
 	controller, action := b.GetControllerAndAction()
 
-	if (controller != "UserController" || action != "Login") && action != "Gather" && action!="DingTalk"{
+	if (controller != "UserController" || action != "Login") && action != "Gather" && controller != "DingTalkOauthRest" {
 		//校验是否登录
-		userId := b.GetSession(SESSION_NAME)
+		userId := b.GetSession(SESSION_USER_ID)
 		if userId != nil {
 			b.userId = userId.(string)
 		} else {

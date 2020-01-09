@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 )
@@ -24,23 +23,23 @@ func (u *UserController) Login() {
 	req := httplib.Post(ngrinderUrl + apiUrl)
 	req.Param("userId", userId)
 	req.Param("password", password)
-	var js NsResponseBean
-	rst, err := req.String()
+	js := new(NsResponseBean)
+	err := req.ToJSON(js)
 	if err != nil {
 		u.result.Code = 1
 		u.result.ErrMsg = err.Error()
 	} else {
-		err = json.Unmarshal([]byte(rst), &js)
-		if err != nil {
-			u.result.Code = 1
-			u.result.ErrMsg = rst
-		} else {
-			u.result.Code = js.Code
-			if js.Code == 0 {
-				u.SetSession(SESSION_NAME, userId)
+		u.result.Code = js.Code
+		if js.Code == 0 {
+			u.SetSession(SESSION_USER_ID, userId)
+			nuser, ok := js.Data.(NUser)
+			if ok {
+				u.SetSession(SESSION_USER_NICK, nuser.UserName)
 			} else {
-				u.result.ErrMsg = js.ErrMsg
+				u.SetSession(SESSION_USER_NICK, userId)
 			}
+		} else {
+			u.result.ErrMsg = js.ErrMsg
 		}
 	}
 	u.responseAjax()

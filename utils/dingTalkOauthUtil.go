@@ -45,7 +45,8 @@ func GetAccessToken() (string, error) {
 
 func GetPersistentCode(accessToken, tmpAuthCode string) (*string, *string, error) {
 	req := httplib.Post("https://oapi.dingtalk.com/sns/get_persistent_code?access_token=" + accessToken)
-	req.Param("tmp_auth_code", tmpAuthCode)
+	pms := map[string]string{"tmp_auth_code": tmpAuthCode}
+	req.JSONBody(pms)
 
 	type Rst struct {
 		Errcode        int    `json:"errcode"`
@@ -81,8 +82,11 @@ func GetSnsToken(openid, persistentCode *string, accessToken string) (string, er
 
 	rst := new(Rst)
 	req := httplib.Post("https://oapi.dingtalk.com/sns/get_sns_token?access_token=" + accessToken)
-	req.Param("openid", *openid)
-	req.Param("persistent_code", *persistentCode)
+	pms := map[string]string{
+		"openid":          *openid,
+		"persistent_code": *persistentCode,
+	}
+	req.JSONBody(pms)
 	err := req.ToJSON(rst)
 	if err != nil {
 		return *new(string), err

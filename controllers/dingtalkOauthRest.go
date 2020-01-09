@@ -16,26 +16,26 @@ type NUser struct {
 	UserName string `json:"userName"`
 }
 
-func (d *DingTalkOauthRest) DingTalk() {
+func (d *DingTalkOauthRest) Get() {
 	code := d.GetString("code")
 	if len(code) <= 0 {
 		d.Data["errMsg"] = "code is empty"
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 
 	accessToken, err := utils.GetAccessToken()
 	if err != nil {
 		d.Data["errMsg"] = err.Error()
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 
 	openid, persistentCode, err := utils.GetPersistentCode(accessToken, code)
 	if err != nil {
 		d.Data["errMsg"] = err.Error()
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 
 	ngrinderUrl := beego.AppConfig.String("ngrinder.serverurl")
@@ -53,38 +53,39 @@ func (d *DingTalkOauthRest) DingTalk() {
 	if err != nil {
 		d.Data["errMsg"] = err.Error()
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 	if rst.Code == 1 {
 		d.Data["errMsg"] = errors.New(rst.ErrMsg)
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 	if rst.Code == 0 {
-		d.SetSession(SESSION_NAME, *openid)
+		d.SetSession(SESSION_USER_ID, *openid)
+		d.SetSession(SESSION_USER_NICK, rst.Data.UserName)
 		//重定向
-		d.Redirect("/v1/home/index", 200)
-		d.StopRun()
+		d.Redirect("/v1/home/index", 302)
+		return
 	}
 
 	snsToken, err := utils.GetSnsToken(openid, persistentCode, accessToken)
 	if err != nil {
 		d.Data["errMsg"] = errors.New(rst.ErrMsg)
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 	dingTalkUser, err := utils.GetUserInfo(snsToken)
 	if err != nil {
 		d.Data["errMsg"] = errors.New(rst.ErrMsg)
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 
 	serverUrl := beego.AppConfig.String("ngrinder.serverurl")
 	saveUrl := beego.AppConfig.String("ngrinder.api.dingTalkSave")
 	serverUrl += saveUrl
 
-	req = httplib.Put(serverUrl)
+	req = httplib.Post(serverUrl)
 	req.Param("userId", dingTalkUser.Openid)
 	req.Param("userName", dingTalkUser.Nick)
 
@@ -93,14 +94,15 @@ func (d *DingTalkOauthRest) DingTalk() {
 	if err != nil {
 		d.Data["errMsg"] = err.Error()
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
 	if rst.Code != 0 {
 		d.Data["errMsg"] = errors.New(rst.ErrMsg)
 		d.TplName = "404.html"
-		d.StopRun()
+		return
 	}
-	d.SetSession(SESSION_NAME, *openid)
+	d.SetSession(SESSION_USER_ID, *openid)
+	d.SetSession(SESSION_USER_NICK, rst.Data.UserName)
 	//重定向
-	d.Redirect("/v1/home/index", 200)
+	d.Redirect("/v1/home/index", 302)
 }

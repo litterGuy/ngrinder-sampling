@@ -18,6 +18,8 @@ func (c *MainController) Get() {
 		redirectUrl = c.Ctx.Input.Site() + ":" + strconv.Itoa(port) + "/dingTalk"
 	}
 
-	c.Data["goto"] = url.QueryEscape("https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=" + appId + "&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=" + redirectUrl)
+	gotoUrl := "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=" + appId + "&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=" + redirectUrl
+	c.Data["goto"] = url.QueryEscape(gotoUrl)
+	c.Data["goto_original"] = gotoUrl
 	c.TplName = "login.html"
 }

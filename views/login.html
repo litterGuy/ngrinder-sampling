@@ -150,7 +150,7 @@
         if (origin == "https://login.dingtalk.com") { //判断是否来自ddLogin扫码事件。
             var loginTmpCode = event.data; //拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
             console.log("loginTmpCode", loginTmpCode);
-            window.location.href = "{{.goto}}&loginTmpCode=" + loginTmpCode;
+            window.location.href = "{{.goto_original}}&loginTmpCode=" + loginTmpCode;
         }
     };
     if (typeof window.addEventListener != 'undefined') {

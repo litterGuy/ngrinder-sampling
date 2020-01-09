@@ -21,7 +21,8 @@ type HomeController struct {
 
 // @router	/index	[get]
 func (h *HomeController) Index() {
-	h.Data["userId"] = h.GetSession(SESSION_NAME)
+	h.Data["userId"] = h.GetSession(SESSION_USER_ID)
+	h.Data["userName"] = h.GetSession(SESSION_USER_NICK)
 	h.TplName = "index.html"
 }
 

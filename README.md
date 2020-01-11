@@ -123,20 +123,20 @@
         
           删除后，本次压测对应的数据、压测结果等全部删除不可找回。删除时，请仔细考虑。                       
         
-[1]: views/images/ngrinder_sampling.png
-[2]: views/images/ngrinder_struct.png
-[3]: views/images/ngrinder_agent_download.png
-[4]: views/images/ngrinder_login.png
-[5]: views/images/ngrinder_announcement.png
-[6]: views/images/ngrinder_scenes_create.png
-[7]: views/images/ngrinder_data_file.png
-[8]: views/images/ngrinder_test_config.png
-[9]: views/images/ngrinder_test_advanced.png
-[10]: views/images/ngrinder_monitor.png
-[11]: views/images/ngrinder_test_rst.png
-[12]: views/images/ngrinder_test_schedule.png
-[13]: views/images/ngrinder_scenes_list.png
-[14]: views/images/ngrinder_report_list.png
-[15]: views/images/mgrinder_report_detail.png
-[16]: views/images/ngrinder_sampling_list.png
-[17]: views/images/ngrinder_sampling_detail.png
+[1]: doc/images/ngrinder_sampling.png
+[2]: doc/images/ngrinder_struct.png
+[3]: doc/images/ngrinder_agent_download.png
+[4]: doc/images/ngrinder_login.png
+[5]: doc/images/ngrinder_announcement.png
+[6]: doc/images/ngrinder_scenes_create.png
+[7]: doc/images/ngrinder_data_file.png
+[8]: doc/images/ngrinder_test_config.png
+[9]: doc/images/ngrinder_test_advanced.png
+[10]: doc/images/ngrinder_monitor.png
+[11]: doc/images/ngrinder_test_rst.png
+[12]: doc/images/ngrinder_test_schedule.png
+[13]: doc/images/ngrinder_scenes_list.png
+[14]: doc/images/ngrinder_report_list.png
+[15]: doc/images/mgrinder_report_detail.png
+[16]: doc/images/ngrinder_sampling_list.png
+[17]: doc/images/ngrinder_sampling_detail.png

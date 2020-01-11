@@ -113,9 +113,9 @@
         <div class="admin-header">
             <span>测试云平台</span>
         </div>
-        <div id="login_container" style="width: 300px;height: 300px;"></div>
+        <div id="login_container" style="width: 300px;height: 300px;" class="layui-hide"></div>
 
-        <form class="layui-form layui-hide" method="post" id="login_form">
+        <form class="layui-form" method="post" id="login_form">
             <div>
                 <i class="layui-icon layui-icon-username admin-icon"></i>
                 <input type="text" name="userId" placeholder="请输入用户名" autocomplete="off"
@@ -129,7 +129,7 @@
             <input class="layui-btn admin-button" lay-submit="" lay-filter="login" type="submit" value="登 陆"/>
         </form>
 
-        <div style="float: right;margin-top: 30px;"><button type="button" class="layui-btn" id="switchBtn">账号登陆</button></div>
+        <div class="layui-hide" style="float: right;margin-top: 30px;"><button type="button" class="layui-btn" id="switchBtn">账号登陆</button></div>
 
     </div>
 </div>
@@ -137,28 +137,6 @@
 <!-- 引入钉钉登陆 -->
 <script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
 <script>
-    var obj = DDLogin({
-        id: "login_container",
-        goto: "{{.goto}}",
-        style: "",
-        width: "300",
-        height: "300"
-    });
-    var hanndleMessage = function (event) {
-        var origin = event.origin;
-        console.log("origin", event.origin);
-        if (origin == "https://login.dingtalk.com") { //判断是否来自ddLogin扫码事件。
-            var loginTmpCode = event.data; //拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
-            console.log("loginTmpCode", loginTmpCode);
-            window.location.href = "{{.goto_original}}&loginTmpCode=" + loginTmpCode;
-        }
-    };
-    if (typeof window.addEventListener != 'undefined') {
-        window.addEventListener('message', hanndleMessage, false);
-    } else if (typeof window.attachEvent != 'undefined') {
-        window.attachEvent('onmessage', hanndleMessage);
-    }
-
     layui.use(['form', 'jquery', 'layer'], function () {
         var form = layui.form,
             $ = layui.jquery,
@@ -172,6 +150,34 @@
                 layer.close(layer.load());
             }
         });
+
+        {{if .goto}}
+            $('#login_container').removeClass('layui-hide');
+            $('#login_form').addClass('layui-hide');
+            $('#switchBtn').parent().removeClass('layui-hide');
+
+            var obj = DDLogin({
+                id: "login_container",
+                goto: "{{.goto}}",
+                style: "",
+                width: "300",
+                height: "300"
+            });
+            var hanndleMessage = function (event) {
+                var origin = event.origin;
+                console.log("origin", event.origin);
+                if (origin == "https://login.dingtalk.com") { //判断是否来自ddLogin扫码事件。
+                    var loginTmpCode = event.data; //拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
+                    console.log("loginTmpCode", loginTmpCode);
+                    window.location.href = "{{.goto_original}}&loginTmpCode=" + loginTmpCode;
+                }
+            };
+            if (typeof window.addEventListener != 'undefined') {
+                window.addEventListener('message', hanndleMessage, false);
+            } else if (typeof window.attachEvent != 'undefined') {
+                window.attachEvent('onmessage', hanndleMessage);
+            }
+        {{end}}
 
         $('#switchBtn').click(function(){
             if($('#login_container').hasClass('layui-hide')){
